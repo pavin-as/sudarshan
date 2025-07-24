@@ -1,0 +1,3643 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Day Overview Calendar</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <style>
+    /* Color Variables */
+    :root {
+      --primary-color: #4a90e2;
+      --primary-light: #e8f0fe;
+      --primary-dark: #2c5282;
+      --success-color: #48bb78;
+      --warning-color: #ed8936;
+      --danger-color: #e53e3e;
+      --text-primary: #2d3748;
+      --text-secondary: #4a5568;
+      --bg-light: #f7fafc;
+      --bg-white: #ffffff;
+      --waiting-list-color: #805ad5;
+      --waiting-list-light: #f3e8ff;
+      
+      /* New action color variables */
+      --dilation-color: #3182ce;
+      --referral-color: #38a169;
+      --oct-color: #319795;
+      --direct-color: #718096;
+      --fundus-color: #9f7aea;
+    }
+
+    body {
+      background-color: var(--bg-light);
+      color: var(--text-primary);
+    }
+
+    .container {
+      max-width: 1200px;
+      padding: 2rem;
+    }
+
+    h2 {
+      color: var(--text-primary);
+      font-weight: 600;
+      margin-bottom: 2rem;
+      text-align: center;
+      position: relative;
+      padding-bottom: 1rem;
+    }
+
+    h2::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 60px;
+      height: 4px;
+      background: linear-gradient(90deg, var(--primary-color), var(--success-color));
+      border-radius: 2px;
+    }
+
+    /* Date Selection Styling */
+    .input-group {
+      background: var(--bg-white);
+      border-radius: 12px;
+      padding: 1rem;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+      margin-bottom: 2rem;
+    }
+
+    .form-control {
+      border: 2px solid var(--primary-light);
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+    }
+
+    .form-control:focus {
+      border-color: var(--primary-color);
+      box-shadow: 0 4px 12px rgba(74, 144, 226, 0.15);
+    }
+
+    .btn-primary {
+      background: var(--primary-color);
+      border: none;
+      border-radius: 8px;
+      padding: 0.75rem 1.5rem;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(74, 144, 226, 0.2);
+    }
+
+    /* Time Slot Styling */
+    .time-slot {
+      background: var(--bg-white);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 1rem;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+      transition: all 0.3s ease;
+    }
+
+    .time-slot:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 24px rgba(0, 0, 0, 0.12);
+    }
+
+    /* Waiting List Styling */
+    .time-slot.waiting-list {
+      background: var(--waiting-list-light);
+      border-left: 4px solid var(--waiting-list-color);
+    }
+
+    .time-slot.waiting-list .slot-header {
+      color: var(--waiting-list-color);
+      font-weight: 700;
+    }
+
+    .time-slot.waiting-list .appointment-details {
+      background: var(--bg-white);
+    }
+
+    .time-slot.waiting-list .appointment-details:hover {
+      background: var(--waiting-list-light);
+    }
+
+    .slot-header {
+      color: var(--primary-color);
+      font-weight: 600;
+      font-size: 1.1rem;
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid var(--primary-light);
+    }
+
+    .appointment-details {
+      background: var(--bg-light);
+      border-radius: 8px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      transition: all 0.3s ease;
+    }
+
+    .appointment-details:hover {
+      background: var(--primary-light);
+    }
+
+    /* Button Styling */
+    .btn {
+      border-radius: 8px;
+      padding: 0.5rem 1rem;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+
+    .btn-outline-primary {
+      border-color: var(--primary-color);
+      color: var(--primary-color);
+    }
+
+    .btn-outline-primary:hover {
+      background: var(--primary-color);
+      color: white;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(74, 144, 226, 0.2);
+    }
+
+    .btn-outline-secondary {
+      border-color: var(--text-secondary);
+      color: var(--text-secondary);
+    }
+
+    .btn-outline-secondary:hover {
+      background: var(--text-secondary);
+      color: white;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(74, 144, 226, 0.2);
+    }
+
+    .btn-outline-success {
+      border-color: var(--success-color);
+      color: var(--success-color);
+    }
+
+    .btn-outline-success:hover {
+      background: var(--success-color);
+      color: white;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(72, 187, 120, 0.2);
+    }
+
+    .btn-outline-danger {
+      border-color: var(--danger-color);
+      color: var(--danger-color);
+    }
+
+    .btn-outline-danger:hover {
+      background: var(--danger-color);
+      color: white;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(229, 62, 62, 0.2);
+    }
+
+    .btn-outline-warning {
+      border-color: var(--warning-color);
+      color: var(--warning-color);
+    }
+
+    .btn-outline-warning:hover {
+      background: var(--warning-color);
+      color: white;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(237, 137, 54, 0.2);
+    }
+
+    /* Editable Fields */
+    [contenteditable="true"] {
+      background: var(--bg-white);
+      border: 2px solid var(--primary-light);
+      border-radius: 6px;
+      padding: 0.5rem;
+      transition: all 0.3s ease;
+    }
+
+    [contenteditable="true"]:focus {
+      border-color: var(--primary-color);
+      box-shadow: 0 4px 12px rgba(74, 144, 226, 0.15);
+      outline: none;
+    }
+
+    /* Download Buttons Section */
+    .download-buttons {
+      background: var(--bg-white);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin: 2rem 0;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+      text-align: center;
+    }
+
+    .download-buttons .btn {
+      margin: 0 0.5rem;
+      min-width: 150px;
+    }
+
+    /* Navigation Buttons */
+    .d-flex.justify-content-between {
+      margin-top: 2rem;
+      padding: 1rem;
+      background: var(--bg-white);
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    }
+
+    /* Loading Spinner */
+    .spinner-border {
+      width: 1rem;
+      height: 1rem;
+      border-width: 0.15em;
+    }
+
+    /* Confirmation Status */
+    .confirmation-status {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      border-radius: 1rem;
+      font-size: 0.875rem;
+      font-weight: 500;
+      margin: 0.5rem 0;
+    }
+
+    .confirmation-status.confirmed {
+      background: rgba(72, 187, 120, 0.1);
+      color: var(--success-color);
+    }
+
+    /* Alert Container */
+    .alert-container {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-width: 400px;
+    }
+
+    .custom-alert {
+      background: var(--bg-white);
+      border-radius: 12px;
+      padding: 16px 20px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      transform: translateX(120%);
+      animation: slideIn 0.3s forwards;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .custom-alert::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 4px;
+    }
+
+    .custom-alert.success::before {
+      background: var(--success-color);
+    }
+
+    .custom-alert.error::before {
+      background: var(--danger-color);
+    }
+
+    .custom-alert.warning::before {
+      background: var(--warning-color);
+    }
+
+    .custom-alert.info::before {
+      background: var(--primary-color);
+    }
+
+    @keyframes slideIn {
+      to {
+        transform: translateX(0);
+      }
+    }
+
+    @keyframes slideOut {
+      to {
+        transform: translateX(120%);
+      }
+    }
+
+    .custom-alert.closing {
+      animation: slideOut 0.3s forwards;
+    }
+
+    /* Modal Styles */
+    .modal {
+      background: rgba(0, 0, 0, 0.5);
+    }
+
+    /* Success Animation Styles */
+    .success-animation {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 9999;
+    }
+
+    .checkmark {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      display: block;
+      stroke-width: 2;
+      stroke: #4bb71b;
+      stroke-miterlimit: 10;
+      box-shadow: inset 0px 0px 0px #4bb71b;
+      animation: fill .4s ease-in-out .4s forwards, scale .3s ease-in-out .9s both;
+    }
+
+    .checkmark-circle {
+      stroke-dasharray: 166;
+      stroke-dashoffset: 166;
+      stroke-width: 2;
+      stroke-miterlimit: 10;
+      stroke: #4bb71b;
+      fill: none;
+      animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+    }
+
+    .checkmark-check {
+      transform-origin: 50% 50%;
+      stroke-dasharray: 48;
+      stroke-dashoffset: 48;
+      animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.8s forwards;
+    }
+
+    @keyframes stroke {
+      100% { stroke-dashoffset: 0; }
+    }
+
+    @keyframes scale {
+      0%, 100% { transform: none; }
+      50% { transform: scale3d(1.1, 1.1, 1); }
+    }
+
+    @keyframes fill {
+      100% { box-shadow: inset 0px 0px 0px 30px #4bb71b; }
+    }
+
+    /* Member Badge Styles */
+    .member-badge {
+      display: inline-block;
+      padding: 4px 8px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      margin-right: 8px;
+      margin-bottom: 6px;
+      margin-top: 2px;
+      border: 1px solid rgba(0,0,0,0.1);
+    }
+
+    /* Add these styles to your existing CSS */
+    .plan-of-action-container {
+      background-color: #f8f9fa;
+      border-radius: 8px;
+      padding: 15px;
+      margin-top: 10px;
+      border: 1px solid #dee2e6;
+    }
+
+    .plan-of-action-list {
+      list-style-type: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .plan-of-action-item {
+      display: flex;
+      align-items: center;
+      padding: 8px 0;
+      border-bottom: 1px solid #e9ecef;
+    }
+
+    .plan-of-action-item:last-child {
+      border-bottom: none;
+    }
+
+    .plan-of-action-name {
+      flex: 1;
+      color: #2c3e50;
+    }
+
+    .eye-selection {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 0.9em;
+      margin-left: 10px;
+    }
+
+    .eye-selection.right {
+      background-color: #e8f4f8;
+      color: #2980b9;
+    }
+
+    .eye-selection.left {
+      background-color: #f8e8e8;
+      color: #c0392b;
+    }
+
+    .eye-selection.both {
+      background-color: #e8f8e8;
+      color: #27ae60;
+    }
+
+    .edit-mode .plan-of-action-item {
+      padding: 10px;
+      background-color: white;
+      border-radius: 6px;
+      margin-bottom: 5px;
+    }
+
+    .edit-mode .plan-of-action-name {
+      margin-right: 10px;
+    }
+
+    .edit-mode .remove-procedure {
+      color: #dc3545;
+      cursor: pointer;
+      margin-left: 10px;
+    }
+
+    /* Add these styles to your existing CSS */
+    .excel-preview-modal {
+      max-width: 95%;
+      margin: 1.75rem auto;
+    }
+
+    .excel-preview-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      font-family: Arial, sans-serif;
+      font-size: 13px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .excel-preview-table th,
+    .excel-preview-table td {
+      border: 1px solid #e0e0e0;
+      padding: 10px 12px;
+      text-align: left;
+      vertical-align: middle;
+    }
+
+    .excel-preview-table th {
+      background-color: #f8f9fa;
+      font-weight: 600;
+      color: #2c3e50;
+      position: sticky;
+      top: 0;
+      z-index: 1;
+      border-bottom: 2px solid #dee2e6;
+    }
+
+    .excel-preview-table tr:nth-child(even) {
+      background-color: #f8f9fa;
+    }
+
+    .excel-preview-table tr:hover {
+      background-color: #f0f7ff;
+    }
+
+    .excel-preview-container {
+      max-height: 70vh;
+      overflow-y: auto;
+      border-radius: 8px;
+      background-color: white;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .excel-preview-header {
+      background-color: #f8f9fa;
+      padding: 15px 20px;
+      border-bottom: 1px solid #dee2e6;
+      border-top-left-radius: 8px;
+      border-top-right-radius: 8px;
+    }
+
+    .excel-preview-title {
+      margin: 0;
+      color: #2c3e50;
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+
+    .pagination-controls {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 12px;
+      margin: 15px;
+      padding: 10px;
+      background-color: #f8f9fa;
+      border-radius: 6px;
+    }
+
+    .pagination-info {
+      font-size: 0.9rem;
+      color: #4a5568;
+      font-weight: 500;
+    }
+
+    .page-size-selector {
+      width: auto;
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 4px;
+      border: 1px solid #e2e8f0;
+      background-color: white;
+    }
+
+    .btn-outline-primary.btn-sm {
+      padding: 4px 12px;
+      font-size: 0.85rem;
+      border-radius: 4px;
+    }
+
+    .btn-outline-primary.btn-sm:hover {
+      background-color: var(--primary-color);
+      color: white;
+    }
+
+    /* Add scrollbar styling */
+    .excel-preview-container::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+
+    .excel-preview-container::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 4px;
+    }
+
+    .excel-preview-container::-webkit-scrollbar-thumb {
+      background: #c1c1c1;
+      border-radius: 4px;
+    }
+
+    .excel-preview-container::-webkit-scrollbar-thumb:hover {
+      background: #a8a8a8;
+    }
+
+    /* Add cell content styling */
+    .excel-preview-table td {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 200px;
+    }
+
+    .excel-preview-table td:hover {
+      overflow: visible;
+      white-space: normal;
+      background-color: #f0f7ff;
+      z-index: 2;
+      position: relative;
+    }
+
+    /* Add confirmation checkmark styling */
+    .excel-preview-table td:contains("✓") {
+      color: #48bb78;
+      font-weight: 600;
+      text-align: center;
+    }
+
+    /* Add time column styling */
+    .excel-preview-table td:first-child {
+      font-weight: 500;
+      color: #2c3e50;
+    }
+
+    /* Add member type badge styling */
+    .excel-preview-table td:nth-child(7) {
+      font-weight: 500;
+    }
+
+    /* Add doctor column styling */
+    .excel-preview-table td:nth-child(9) {
+      font-weight: 500;
+      color: #2c3e50;
+    }
+
+    /* 1️⃣ Hour-Block Accordions */
+    .hour-group {
+      background: var(--bg-white);
+      border-radius: 12px;
+      margin-bottom: 1rem;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+    
+    .hour-group summary {
+      padding: 1rem 1.5rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      background: var(--primary-light);
+      cursor: pointer;
+      position: relative;
+      outline: none;
+      transition: all 0.2s ease;
+      border-radius: 12px;
+    }
+    
+    .hour-group summary:hover {
+      background: var(--primary-color);
+      color: white;
+    }
+    
+    .hour-group summary::marker,
+    .hour-group summary::-webkit-details-marker {
+      display: none;
+    }
+    
+    .hour-group summary::after {
+      content: '▼';
+      position: absolute;
+      right: 1.5rem;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 0.8rem;
+      transition: transform 0.3s ease;
+    }
+    
+    .hour-group[open] summary::after {
+      transform: translateY(-50%) rotate(180deg);
+    }
+    
+    .hour-group[open] summary {
+      border-radius: 12px 12px 0 0;
+    }
+    
+    /* 2️⃣ Two-Level Card Layout */
+    .appointment-card {
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      margin: 0.75rem;
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+    
+    .appointment-card:hover {
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      transform: translateY(-2px);
+    }
+    
+    .appointment-header {
+      display: flex;
+      align-items: center;
+      padding: 0.75rem 1rem;
+      background: var(--bg-light);
+      cursor: pointer;
+      position: relative;
+    }
+    
+    .appointment-header::after {
+      content: '⌵';
+      position: absolute;
+      right: 1rem;
+      transition: transform 0.3s ease;
+    }
+    
+    .appointment-card.expanded .appointment-header::after {
+      transform: rotate(180deg);
+    }
+    
+    .appointment-time {
+      font-weight: 600;
+      min-width: 80px;
+    }
+    
+    .appointment-patient {
+      flex: 1;
+      font-weight: 500;
+    }
+    
+    .appointment-doctor {
+      margin: 0 1rem;
+      font-weight: 500;
+      color: var(--primary-dark);
+    }
+    
+    .appointment-quick-plan {
+      display: flex;
+      gap: 0.25rem;
+    }
+    
+    .appointment-details {
+      padding: 1rem;
+      display: none;
+      background: white;
+      border-top: 1px solid #e2e8f0;
+    }
+    
+    .appointment-card.expanded .appointment-details {
+      display: block;
+    }
+    
+    .detail-row {
+      display: flex;
+      flex-wrap: wrap;
+      margin-bottom: 0.75rem;
+    }
+    
+    .detail-item {
+      margin-right: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+    
+    .detail-label {
+      font-weight: 500;
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+    }
+    
+    .plan-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin: 0.5rem 0;
+    }
+    
+    /* Waiting list styling for new cards */
+    .appointment-card.waiting-list {
+      border-left: 4px solid var(--waiting-list-color);
+    }
+    
+    .appointment-card.waiting-list .appointment-header {
+      background: var(--waiting-list-light);
+    }
+    
+    /* 3️⃣ Floating Summary Bar */
+    #daySummaryBar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--primary-dark);
+      color: white;
+      padding: 0.75rem 1rem;
+      margin-bottom: 1.5rem;
+      border-radius: 0 0 12px 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+    }
+    
+    .summary-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin: 0.25rem 0;
+    }
+    
+    .summary-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .summary-value {
+      font-weight: 600;
+      font-size: 1.1rem;
+    }
+    
+    /* 4️⃣ Icons & badge colors for plan keywords */
+    .plan-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.25rem 0.6rem;
+      border-radius: 1rem;
+      font-size: 0.85rem;
+      font-weight: 500;
+      gap: 0.3rem;
+    }
+    
+    .badge-dilation {
+      background-color: rgba(49, 130, 206, 0.1);
+      color: var(--dilation-color);
+    }
+    
+    .badge-referral {
+      background-color: rgba(56, 161, 105, 0.1);
+      color: var(--referral-color);
+    }
+    
+    .badge-oct {
+      background-color: rgba(49, 151, 149, 0.1);
+      color: var(--oct-color);
+    }
+    
+    .badge-direct {
+      background-color: rgba(113, 128, 150, 0.1);
+      color: var(--direct-color);
+    }
+    
+    .badge-fundus {
+      background-color: rgba(159, 122, 234, 0.1);
+      color: var(--fundus-color);
+    }
+    
+    .badge-at {
+      background-color: rgba(221, 107, 32, 0.1);
+      color: var(--at-color);
+    }
+    
+    .badge-eye {
+      background-color: rgba(79, 209, 197, 0.1);
+      color: #2c7a7b;
+    }
+    
+    /* Print styles */
+    @media print {
+      /* Hide UI elements that shouldn't be printed */
+      #daySummaryBar,
+      .download-buttons, 
+      .btn,
+      .input-group,
+      .d-flex.justify-content-between,
+      .alert-container {
+        display: none !important;
+      }
+      
+      body {
+        background: white;
+        font-size: 12px;
+      }
+      
+      .container {
+        max-width: 100%;
+        padding: 0;
+        margin: 0;
+      }
+      
+      /* Force all hour groups to be open */
+      .hour-group {
+        page-break-inside: avoid;
+      }
+      
+      .hour-group summary {
+        background: var(--bg-light);
+        color: var(--text-primary);
+        font-weight: bold;
+        border-bottom: 2px solid #ddd;
+        padding: 8px 0;
+        margin-bottom: 10px;
+      }
+      
+      /* Hide the accordion arrow */
+      .hour-group summary::after {
+        display: none;
+      }
+      
+      /* Force accordion content to be visible */
+      .hour-group[open] > *:not(summary),
+      .hour-group > *:not(summary) {
+        display: block !important;
+        visibility: visible !important;
+      }
+      
+      /* Appointment cards formatting */
+      .appointment-card {
+        page-break-inside: avoid;
+        border: 1px solid #ddd;
+        margin-bottom: 8px;
+        padding: 8px;
+        background: white;
+      }
+      
+      /* Force all appointment details to be visible */
+      .appointment-details {
+        display: block !important;
+        visibility: visible !important;
+      }
+      
+      /* Hide interactive elements in print */
+      .appointment-header::after,
+      .action-buttons,
+      .confirmation-buttons {
+        display: none !important;
+      }
+      
+      /* Simplify appointment layout for print */
+      .appointment-header {
+        border-bottom: 1px solid #eee;
+        padding-bottom: 4px;
+        margin-bottom: 8px;
+      }
+      
+      .detail-row {
+        margin-bottom: 4px;
+      }
+      
+      .detail-item {
+        margin-right: 15px;
+        margin-bottom: 4px;
+        font-size: 11px;
+      }
+      
+      .plan-badges .plan-badge {
+        font-size: 10px;
+        padding: 2px 6px;
+        margin-right: 4px;
+      }
+    }
+
+    /* Clickable row styling */
+    .clickable-row {
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    .clickable-row:hover {
+      background-color: var(--primary-light) !important;
+    }
+
+    .clickable-row td {
+      position: relative;
+    }
+
+    .clickable-row::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background-color: var(--primary-color);
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    .clickable-row:hover::after {
+      opacity: 1;
+    }
+
+    /* Loading overlay styles */
+    .loading-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(255, 255, 255, 0.8);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+    }
+
+    .loading-spinner {
+      background-color: white;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+      text-align: center;
+    }
+
+    /* Add these styles in the <style> section */
+    .summary-item {
+      position: relative;
+      cursor: help;
+      display: inline-block;
+    }
+
+    .summary-item:hover::after {
+      content: attr(title);
+      position: fixed;
+      transform: translate(-50%, 0);  /* Changed to show below */
+      top: 100%;  /* Position below the element */
+      left: 50%;
+      padding: 8px 12px;
+      background-color: var(--primary-dark);
+      color: white;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      white-space: nowrap;
+      z-index: 9999;
+      margin-top: 10px;  /* Changed from margin-bottom to margin-top */
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+      font-weight: normal;
+      pointer-events: none;
+      opacity: 1;
+      max-width: 300px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .summary-item:hover::before {
+      content: '';
+      position: fixed;
+      transform: translateX(-50%) rotate(180deg);  /* Rotated to point upward */
+      top: 100%;  /* Position at the bottom of the element */
+      left: 50%;
+      border-width: 6px;
+      border-style: solid;
+      border-color: var(--primary-dark) transparent transparent transparent;
+      margin-top: 4px;  /* Changed from margin-bottom to margin-top */
+      z-index: 9999;
+      pointer-events: none;
+    }
+
+    /* Family Identifier Button Styling */
+    .btn-outline-info.btn-sm:disabled {
+      background-color: rgba(13, 202, 240, 0.1);
+      border-color: rgba(13, 202, 240, 0.3);
+      color: rgba(13, 202, 240, 0.8);
+      cursor: default;
+      opacity: 0.8;
+    }
+
+    .btn-outline-info.btn-sm:disabled:hover {
+      background-color: rgba(13, 202, 240, 0.1);
+      border-color: rgba(13, 202, 240, 0.3);
+      color: rgba(13, 202, 240, 0.8);
+      transform: none;
+      box-shadow: none;
+    }
+
+    /* Urgency Badge Styles */
+    .urgency-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      margin-left: 8px;
+    }
+
+    .urgency-high {
+      background-color: rgba(220, 53, 69, 0.1);
+      color: #dc3545;
+    }
+
+    .urgency-medium {
+      background-color: rgba(255, 193, 7, 0.1);
+      color: #ffc107;
+    }
+
+    .urgency-low {
+      background-color: rgba(40, 167, 69, 0.1);
+      color: #28a745;
+    }
+
+    .urgency-icon {
+      margin-right: 4px;
+    }
+
+
+  </style>
+</head>
+<body>
+  <!-- Add alert container -->
+  <div class="alert-container" id="alertContainer"></div>
+
+  <!-- 3️⃣ Floating Summary Bar -->
+  <div id="daySummaryBar">
+    <div class="summary-group">
+      <div class="summary-item">
+        <span class="summary-label">Total</span>
+        <span class="summary-value" id="summary-total">0</span>
+      </div>
+      <div class="summary-item">
+        <span class="summary-label">NEW</span>
+        <span class="summary-value" id="summary-new">0</span>
+      </div>
+      <div class="summary-item">
+        <span class="summary-label">OLD</span>
+        <span class="summary-value" id="summary-old">0</span>
+      </div>
+      <div class="summary-item">
+        <span class="summary-label">Waiting</span>
+        <span class="summary-value" id="summary-waiting">0</span>
+      </div>
+    </div>
+    <div class="summary-group" id="topProcedures">
+      <!-- Dynamic procedures will be inserted here -->
+    </div>
+  </div>
+
+  <div class="container">
+    <h2>Day Overview Calendar</h2>
+    <div class="input-group">
+      <input type="date" id="selectedDate" class="form-control">
+      <div class="form-check form-switch ms-2 d-flex align-items-center">
+        <input class="form-check-input" type="checkbox" id="lockDateToggle">
+        <label class="form-check-label ms-1" for="lockDateToggle">Lock Date</label>
+      </div>
+      <button class="btn btn-primary" onclick="loadAppointments()">View Appointments</button>
+    </div>
+
+    <div id="timeSlotsContainer"></div>
+
+    <div class="download-buttons">
+      <button class="btn btn-outline-primary" onclick="showExcelPreview()">
+        <i class="fas fa-file-excel"></i> Preview Excel
+      </button>
+      <button class="btn btn-outline-primary" onclick="printDayOverview()">
+        <i class="fas fa-print"></i> Print
+      </button>
+      <button class="btn btn-outline-primary" onclick="printPOA()">
+        <i class="fas fa-print"></i> Print POA
+      </button>
+      <button class="btn btn-outline-primary" onclick="showEmailConfirmation()">
+        <i class="fas fa-envelope"></i> Send Email
+      </button>
+    </div>
+
+    <div class="d-flex justify-content-between">
+      <button class="btn btn-outline-secondary" onclick="goBack()">Back to Dashboard</button>
+      <button class="btn btn-outline-danger" onclick="logout()">Logout</button>
+    </div>
+  </div>
+
+  <script>
+    var sessionToken = "<?= sessionToken ?>";
+    var baseUrl = "<?= webAppUrl ?>";
+
+    // Load appointments immediately when the page loads
+    window.onload = function() {
+      // Check if a locked date exists in sessionStorage
+      const lockedDate = sessionStorage.getItem('lockedDate');
+      const dateLocked = sessionStorage.getItem('dateLocked') === 'true';
+      
+      // Set the date input value
+      if (dateLocked && lockedDate) {
+        document.getElementById("selectedDate").value = lockedDate;
+        document.getElementById("lockDateToggle").checked = true;
+      } else {
+        var today = new Date().toISOString().split('T')[0];
+        document.getElementById("selectedDate").value = today;
+      }
+      
+      // Load appointment data
+      loadAppointments();
+      
+      // Load plan options for procedure input
+      loadPlanOfActionOptions();
+      
+      // Expand first hour group by default
+      setTimeout(function() {
+        const firstHourGroup = document.querySelector('.hour-group');
+        if (firstHourGroup) {
+          firstHourGroup.setAttribute('open', 'true');
+        }
+      }, 500);
+      
+      // Add event listener for the lock date toggle
+      document.getElementById("lockDateToggle").addEventListener('change', function() {
+        const selectedDate = document.getElementById("selectedDate").value;
+        if (this.checked) {
+          sessionStorage.setItem('dateLocked', 'true');
+          sessionStorage.setItem('lockedDate', selectedDate);
+        } else {
+          sessionStorage.setItem('dateLocked', 'false');
+          sessionStorage.removeItem('lockedDate');
+        }
+      });
+      
+      // Add event listener for date changes
+      document.getElementById("selectedDate").addEventListener('change', function() {
+        if (document.getElementById("lockDateToggle").checked) {
+          sessionStorage.setItem('lockedDate', this.value);
+        }
+      });
+    };
+
+    function loadAppointments() {
+      var date = document.getElementById("selectedDate").value;
+      if (!date) {
+        showAlert("Please select a date.", "warning");
+        return;
+      }
+      
+      // Save the date to sessionStorage if locked
+      if (document.getElementById("lockDateToggle").checked) {
+        sessionStorage.setItem('lockedDate', date);
+      }
+      
+      showAlert(`Loading appointments for ${date}...`, "info");
+      google.script.run.withSuccessHandler(renderAppointments).getAppointmentsForDay(date);
+    }
+
+    function renderAppointments(appointments) {
+      console.log("Appointments received:", appointments);
+      
+      // Debug PatientType field
+      if (appointments && appointments.length > 0) {
+        console.log("First appointment details:", appointments[0]);
+        console.log("PatientType value:", appointments[0]['PatientType']);
+        console.log("Urgency Level value:", appointments[0]['Urgency Level']); // Updated property name
+      }
+      
+      appointments = appointments || [];
+      var container = document.getElementById("timeSlotsContainer");
+      container.innerHTML = "";
+
+      if (appointments.length === 0) {
+        showAlert("No appointments found for the selected date.", "info");
+        return;
+      }
+
+      // Separate waiting list appointments
+      var waitingListAppointments = appointments.filter(function(appt) {
+        return appt['AppointmentType'] === 'WAITING LIST';
+      });
+
+      var regularAppointments = appointments.filter(function(appt) {
+        return appt['AppointmentType'] !== 'WAITING LIST';
+      });
+
+      // Display waiting list appointments first if any
+      if (waitingListAppointments.length > 0) {
+        const waitingListDetails = document.createElement("details");
+        waitingListDetails.className = "hour-group";
+        waitingListDetails.open = true; // Start open by default
+        
+        const waitingListSummary = document.createElement("summary");
+        waitingListSummary.textContent = `Waiting List (${waitingListAppointments.length})`;
+        waitingListDetails.appendChild(waitingListSummary);
+        
+        // Loop through waiting list appointments
+        waitingListAppointments.forEach(function(appt) {
+          const card = createAppointmentCard(appt, true);
+          waitingListDetails.appendChild(card);
+        });
+        
+        container.appendChild(waitingListDetails);
+      }
+
+      // Group regular appointments by hour
+      var hourGroups = {};
+      regularAppointments.forEach(function(appt) {
+        const time = new Date(appt.TimeSlot);
+        const hour = time.getHours();
+        if (!hourGroups[hour]) hourGroups[hour] = [];
+        hourGroups[hour].push(appt);
+      });
+
+      // Sort hours
+      var sortedHours = Object.keys(hourGroups).sort((a, b) => parseInt(a) - parseInt(b));
+
+      // Create hour-based accordion groups
+      sortedHours.forEach(function(hour) {
+        const appointments = hourGroups[hour];
+        
+        // Format hour for display (12-hour format)
+        const hourInt = parseInt(hour);
+        const displayHour = hourInt % 12 === 0 ? 12 : hourInt % 12;
+        const ampm = hourInt >= 12 ? 'PM' : 'AM';
+        const nextHour = (hourInt + 1) % 24;
+        const displayNextHour = nextHour % 12 === 0 ? 12 : nextHour % 12;
+        const nextAmpm = nextHour >= 12 ? 'PM' : 'AM';
+        
+        // Create hour group
+        const details = document.createElement("details");
+        details.className = "hour-group";
+        
+        const summary = document.createElement("summary");
+        summary.textContent = `${displayHour}${ampm}-${displayNextHour}${nextAmpm} (${appointments.length})`;
+        details.appendChild(summary);
+        
+        // Sort appointments by time within the hour
+        appointments.sort(function(a, b) {
+          return new Date(a.TimeSlot) - new Date(b.TimeSlot);
+        });
+        
+        // Add appointments to hour group
+        appointments.forEach(function(appt) {
+          const card = createAppointmentCard(appt, false);
+          details.appendChild(card);
+        });
+        
+        container.appendChild(details);
+      });
+
+      // Update summary statistics
+      updateSummaryBar(appointments);
+      
+      showAlert(`Loaded ${appointments.length} appointments`, "success");
+    }
+    
+    // Helper function to create appointment card with two-level layout
+    function createAppointmentCard(appt, isWaitingList) {
+      console.log("Creating card for appointment:", appt);
+      console.log("Is waiting list:", isWaitingList);
+      console.log("Urgency level:", appt['Urgency Level']); // Updated property name
+      
+      const card = document.createElement("div");
+      card.className = `appointment-card ${isWaitingList ? 'waiting-list' : ''}`;
+      
+      // Create header section (always visible)
+      const header = document.createElement("div");
+      header.className = "appointment-header";
+      header.onclick = function() {
+        card.classList.toggle("expanded");
+      };
+      
+      // Time component
+      const timeSpan = document.createElement("div");
+      timeSpan.className = "appointment-time";
+      timeSpan.textContent = normalizeTimeSlot(appt["TimeSlot"]);
+      
+      // Patient name component
+      const patientSpan = document.createElement("div");
+      patientSpan.className = "appointment-patient";
+      patientSpan.textContent = appt["PatientName"];
+      
+      // Status badge component (Member type)
+      const statusBadge = document.createElement("span");
+      statusBadge.className = `badge ${getMemberBadgeClass(appt['PatientType'])} member-badge`;
+      statusBadge.textContent = appt['PatientType'] || '-';
+      
+      // Add urgency badge for waiting list appointments
+      if (isWaitingList && appt['Urgency Level']) { // Updated property name
+        console.log("Adding urgency badge for:", appt['Urgency Level']); // Updated property name
+        const urgencyBadge = document.createElement("span");
+        urgencyBadge.className = `urgency-badge urgency-${appt['Urgency Level'].toLowerCase()}`; // Updated property name
+        
+        // Add appropriate icon based on urgency level
+        let urgencyIcon = '';
+        switch(appt['Urgency Level'].toLowerCase()) { // Updated property name
+          case 'red':
+            urgencyIcon = '🔴';
+            break;
+          case 'yellow':
+            urgencyIcon = '🟡';
+            break;
+          case 'green':
+            urgencyIcon = '🟢';
+            break;
+          default:
+            console.log("Unknown urgency level:", appt['Urgency Level']); // Updated property name
+            urgencyIcon = '⚪';
+        }
+        
+        urgencyBadge.innerHTML = `<span class="urgency-icon">${urgencyIcon}</span>${appt['Urgency Level']}`; // Updated property name
+        header.appendChild(urgencyBadge);
+      } else {
+        console.log("Not adding urgency badge. isWaitingList:", isWaitingList, "Urgency Level:", appt['Urgency Level']); // Updated property name
+      }
+      
+      // Doctor initials component
+      const doctorSpan = document.createElement("div");
+      doctorSpan.className = "appointment-doctor";
+      doctorSpan.textContent = getInitials(appt["Doctor"]);
+      doctorSpan.title = appt["Doctor"];
+      
+      // Quick plan icon component
+      const planIcon = document.createElement("div");
+      planIcon.className = "appointment-quick-plan";
+      
+      // Get main plan icon
+      const planIcons = getPlanIcons(appt["PlanOfAction"]);
+      if (planIcons.length > 0) {
+        planIcon.innerHTML = planIcons[0]; // Only show first icon in header
+      }
+      
+      // Add elements to header
+      header.appendChild(timeSpan);
+      header.appendChild(patientSpan);
+      header.appendChild(statusBadge);
+      header.appendChild(doctorSpan);
+      header.appendChild(planIcon);
+      
+      // Create details section (initially hidden, toggles on header click)
+      const details = document.createElement("div");
+      details.className = "appointment-details";
+      
+      // Create the same HTML structure as before, but organized differently
+      let detailsHTML = '';
+      
+      // Row 1: MRD and Phone
+      detailsHTML += '<div class="detail-row">';
+      detailsHTML += `<div class="detail-item"><span class="detail-label">MRD:</span> ${appt['MRDNo']}</div>`;
+      detailsHTML += `<div class="detail-item"><span class="detail-label">Phone:</span> ${appt['Phone']}</div>`;
+      detailsHTML += `<div class="detail-item"><span class="detail-label">Age:</span> ${appt['Age']} | <span class="detail-label">Gender:</span> ${appt['Gender']}</div>`;
+      detailsHTML += '</div>';
+      
+      // Row 2: Type and Doctor
+      detailsHTML += '<div class="detail-row">';
+      detailsHTML += `<div class="detail-item"><span class="detail-label">Type:</span> <select id="type_${appt['AppointmentID']}" class="form-select form-select-sm" style="display: none;"></select><span id="type_display_${appt['AppointmentID']}">${appt['AppointmentType']}</span></div>`;
+      detailsHTML += `<div class="detail-item"><span class="detail-label">Doctor:</span> <select id="doctor_${appt['AppointmentID']}" class="form-select form-select-sm" style="display: none;"></select><span id="doctor_display_${appt['AppointmentID']}">${appt['Doctor']}</span></div>`;
+      detailsHTML += '</div>';
+      
+      // Row 3: Full plan with icons
+      detailsHTML += '<div class="detail-row">';
+      detailsHTML += `<div class="detail-item"><span class="detail-label">Plan of Action:</span></div>`;
+      detailsHTML += '</div>';
+      
+      // Plan container (preserve original IDs for JS functionality)
+      detailsHTML += `<div id="plan_container_${appt['AppointmentID']}" class="plan-container">`;
+      detailsHTML += `<div id="procedureInputContainer_${appt['AppointmentID']}" class="position-relative d-none">`;
+      detailsHTML += `<input type="text" id="procedureInput_${appt['AppointmentID']}" class="form-control form-control-sm" placeholder="Type to search…">`;
+      detailsHTML += `<div id="suggestionsDropdown_${appt['AppointmentID']}" class="list-group position-absolute w-100"></div>`;
+      detailsHTML += '</div>';
+      
+      // Eye selection container
+      detailsHTML += `<div id="eyeSelectionContainer_${appt['AppointmentID']}" class="mt-2 d-none">`;
+      detailsHTML += '<span class="form-label">Select Eye:</span>';
+      detailsHTML += '<div class="btn-group ms-2">';
+      detailsHTML += `<input type="radio" name="eyeSelection_${appt['AppointmentID']}" id="re_${appt['AppointmentID']}" value="RE" class="btn-check">`;
+      detailsHTML += `<label for="re_${appt['AppointmentID']}" class="btn btn-outline-secondary btn-sm">RE</label>`;
+      detailsHTML += `<input type="radio" name="eyeSelection_${appt['AppointmentID']}" id="le_${appt['AppointmentID']}" value="LE" class="btn-check">`;
+      detailsHTML += `<label for="le_${appt['AppointmentID']}" class="btn btn-outline-secondary btn-sm">LE</label>`;
+      detailsHTML += `<input type="radio" name="eyeSelection_${appt['AppointmentID']}" id="be_${appt['AppointmentID']}" value="BE" class="btn-check">`;
+      detailsHTML += `<label for="be_${appt['AppointmentID']}" class="btn btn-outline-secondary btn-sm">BE</label>`;
+      detailsHTML += '</div>';
+      detailsHTML += `<button id="confirmEyeSelection_${appt['AppointmentID']}" class="btn btn-sm btn-primary ms-3">Confirm</button>`;
+      detailsHTML += '</div>';
+      
+      // Selected procedures list
+      detailsHTML += `<div id="selectedProceduresList_${appt['AppointmentID']}" class="mt-2"></div>`;
+      detailsHTML += `<input type="hidden" id="planOfAction_${appt['AppointmentID']}" name="planOfAction">`;
+      
+      // Plan display with badges
+      detailsHTML += `<span id="plan_display_${appt['AppointmentID']}" style="display:none">${appt['PlanOfAction']}</span>`;
+      detailsHTML += '<div class="plan-badges">';
+      
+      // Generate plan badges with icons
+      const plans = parsePlanOfAction(appt['PlanOfAction']);
+      plans.forEach(plan => {
+        detailsHTML += plan.html;
+      });
+      
+      detailsHTML += '</div>';
+      detailsHTML += '</div>';
+      
+      // Row 4: Remarks
+      detailsHTML += '<div class="detail-row">';
+      detailsHTML += `<div class="detail-item"><span class="detail-label">Remarks:</span> <span id="remarks_${appt['AppointmentID']}" contenteditable="false">${appt['Remarks']}</span></div>`;
+      detailsHTML += '</div>';
+      
+      // Confirmation buttons
+      if (!isWaitingList) {
+        detailsHTML += '<div class="confirmation-buttons">';
+        
+        // 4-Day confirmation
+        detailsHTML += `<div id="confirm4DayContainer_${appt['AppointmentID']}">`;
+        if (appt['FourDayConfirmDate'] && appt['FourDayConfirmBy']) {
+          detailsHTML += '<div class="confirmation-status confirmed">✓ 4-Day Confirmed: ' + 
+                   new Date(appt['FourDayConfirmDate']).toLocaleDateString() + 
+                   ' by ' + appt['FourDayConfirmBy'] + '</div>';
+        } else {
+          detailsHTML += `<button id="confirm4Day_${appt['AppointmentID']}" ` +
+                   'class="btn btn-outline-primary" ' +
+                   `onclick="confirm4Day('${appt['AppointmentID']}')">4-Day Confirm</button>`;
+        }
+        detailsHTML += '</div>';
+
+        // 1-Day confirmation
+        detailsHTML += `<div id="confirm1DayContainer_${appt['AppointmentID']}">`;
+        if (appt['OneDayConfirmDate'] && appt['OneDayConfirmBy']) {
+          detailsHTML += '<div class="confirmation-status confirmed">✓ 1-Day Confirmed: ' + 
+                   new Date(appt['OneDayConfirmDate']).toLocaleDateString() + 
+                   ' by ' + appt['OneDayConfirmBy'] + '</div>';
+        } else {
+          detailsHTML += `<button id="confirm1Day_${appt['AppointmentID']}" ` +
+                   'class="btn btn-outline-primary" ' +
+                   `onclick="confirm1Day('${appt['AppointmentID']}')">1-Day Confirm</button>`;
+        }
+        detailsHTML += '</div>';
+        detailsHTML += '</div>';
+      }
+      
+      // Action buttons
+      detailsHTML += '<div class="action-buttons mt-2">';
+      detailsHTML += `<button class="btn btn-outline-secondary" onclick="editAppointment('${appt['AppointmentID']}')">Edit</button> `;
+      detailsHTML += `<button class="btn btn-outline-success" id="save_${appt['AppointmentID']}" style="display:none" onclick="saveAppointment('${appt['AppointmentID']}')">Save</button> `;
+      detailsHTML += `<button class="btn btn-outline-warning" id="cancelEdit_${appt['AppointmentID']}" style="display:none" onclick="cancelEditAppointment('${appt['AppointmentID']}')">Cancel</button> `;
+      detailsHTML += `<button class="btn btn-outline-danger" onclick="deleteAppointment('${appt['AppointmentID']}')">Delete</button> `;
+      detailsHTML += `  <button class="btn btn-outline-warning btn-sm" onclick="archiveAppointmentClient('${appt['AppointmentID']}')">Archive</button>`;
+      detailsHTML += `<button class="btn btn-outline-warning" ` +
+              `data-mrd="${appt['MRDNo']}" ` +
+              `data-appointment-id="${appt['AppointmentID']}" ` +
+              `onclick="rescheduleAppointment(event)">Reschedule</button>`;
+      
+      // Family Identifier button - show value if exists, otherwise show generate button
+      const familyIdentifier = appt['Family Identifier'] || '';
+      if (familyIdentifier && familyIdentifier.trim() !== '') {
+        detailsHTML += `<button class="btn btn-outline-info btn-sm" disabled title="Family Identifier: ${familyIdentifier}">👨‍👩‍👧‍👦 ${familyIdentifier}</button>`;
+      } else {
+        detailsHTML += `<button class="btn btn-outline-info btn-sm" onclick="generateFamilyIdentifier('${appt['AppointmentID']}')" title="Generate Family Identifier">👨‍👩‍👧‍👦</button>`;
+      }
+      
+      detailsHTML += '</div>';
+      
+      details.innerHTML = detailsHTML;
+      
+      // Add elements to card
+      card.appendChild(header);
+      card.appendChild(details);
+      
+      return card;
+    }
+    
+    // Helper functions for plan badges
+    function parsePlanOfAction(plan) {
+      if (!plan || plan === '-') return [];
+      
+      let procedures = [];
+      
+      try {
+        // Try to parse as JSON first
+        procedures = JSON.parse(plan);
+        if (!Array.isArray(procedures)) {
+          procedures = [procedures];
+        }
+      } catch (e) {
+        // If not JSON, split by / or , or ;
+        procedures = plan.split(/[/,;]/);
+      }
+      
+      // Clean up and map to badge objects
+      return procedures.map(proc => {
+        let text = typeof proc === 'object' ? proc.name : proc.toString().trim();
+        let eye = typeof proc === 'object' && proc.eye ? proc.eye : '';
+        
+        if (typeof text === 'string' && text.includes('(') && !eye) {
+          // Try to extract eye information from text
+          const match = text.match(/\((RE|LE|BE)\)$/i);
+          if (match) {
+            eye = match[1].toUpperCase();
+            text = text.replace(/\((RE|LE|BE)\)$/i, '').trim();
+          }
+        }
+        
+        return {
+          text: text,
+          eye: eye,
+          html: getBadgeHTML(text, eye)
+        };
+      });
+    }
+    
+    function getBadgeHTML(text, eye) {
+      const cleanText = (typeof text === 'string') ? text.trim() : '';
+      const lowerText = cleanText.toLowerCase();
+      
+      let badgeClass = '';
+      let icon = '';
+      
+      // Determine badge type based on keywords
+      if (lowerText.includes('dil') || lowerText.includes('dilat')) {
+        badgeClass = 'badge-dilation';
+        icon = '💧';
+      } else if (lowerText.includes('ref') || lowerText.includes('referral')) {
+        badgeClass = 'badge-referral';
+        icon = '👓';
+      } else if (lowerText.includes('oct')) {
+        badgeClass = 'badge-oct';
+        icon = '📊';
+      } else if (lowerText.includes('direct')) {
+        badgeClass = 'badge-direct';
+        icon = '➡️';
+      } else if (lowerText.includes('fundus') || lowerText.includes('photo')) {
+        badgeClass = 'badge-fundus';
+        icon = '📸';
+      } else if (lowerText.includes('at') || lowerText.includes('a-scan')) {
+        badgeClass = 'badge-at';
+        icon = '🛠️';
+      } else {
+        badgeClass = 'badge-secondary';
+        icon = '📋';
+      }
+      
+      let html = `<span class="plan-badge ${badgeClass}">${icon} ${cleanText}</span>`;
+      
+      // Add eye badge if specified
+      if (eye) {
+        html += `<span class="plan-badge badge-eye">${eye}</span>`;
+      }
+      
+      return html;
+    }
+    
+    // Get doctor initials
+    function getInitials(name) {
+      if (!name) return '';
+      
+      const parts = name.split(' ');
+      if (parts.length === 1) return parts[0].substring(0, 2).toUpperCase();
+      
+      return parts.map(part => part.charAt(0)).join('').toUpperCase();
+    }
+    
+    // Get first plan icon
+    function getPlanIcons(plan) {
+      const procedures = parsePlanOfAction(plan);
+      return procedures.map(proc => {
+        const badgeMatch = proc.html.match(/(💧|👓|📊|➡️|📸|🛠️|📋)/);
+        return badgeMatch ? badgeMatch[1] : '📋';
+      });
+    }
+
+    function normalizeTimeSlot(timeStr) {
+      if (!timeStr) {
+        console.error("TimeSlot is undefined or null");
+        return "";
+      }
+
+      try {
+        var date = new Date(timeStr);
+        var hours = date.getHours();
+        var minutes = date.getMinutes();
+        var ampm = hours >= 12 ? "PM" : "AM";
+        var displayHour = (hours % 12 === 0) ? 12 : hours % 12;
+        var timeLabel = displayHour + ":" + (minutes < 10 ? "0" + minutes : minutes) + " " + ampm;
+        return timeLabel.trim();
+      } catch (e) {
+        console.error("Error normalizing time slot:", timeStr, e);
+        return ""; // Return empty string or a default error message
+      }
+    }
+
+
+    function goBack() {
+      // Navigate back to the Dashboard (pass sessionToken and page parameter)
+      window.top.location.href = baseUrl + "?page=Dashboard&sessionToken=" + encodeURIComponent(sessionToken);
+    }
+    function logout() {
+      console.log("DayOverview: Logout clicked, session token:", sessionToken);
+      showAlert("Logging out...", "info");
+      google.script.run
+        .withSuccessHandler(function() {
+          window.top.location.href = baseUrl;
+        })
+        .withFailureHandler(function(error) {
+          showAlert("Error during logout: " + error, "error");
+        })
+        .clearSession(sessionToken);
+    }
+
+    function showAlert(message, type = 'info', title = null) {
+      const container = document.getElementById('alertContainer');
+      const alert = document.createElement('div');
+      alert.className = `custom-alert ${type}`;
+      
+      let icon = '';
+      switch(type) {
+        case 'success':
+          icon = '✓';
+          title = title || 'Success';
+          break;
+        case 'error':
+          icon = '✕';
+          title = title || 'Error';
+          break;
+        case 'warning':
+          icon = '⚠';
+          title = title || 'Warning';
+          break;
+        default:
+          icon = 'ℹ';
+          title = title || 'Information';
+      }
+
+      alert.innerHTML = `
+        <div class="alert-icon ${type}">${icon}</div>
+        <div class="alert-content">
+          <div class="alert-title">${title}</div>
+          <div class="alert-message">${message}</div>
+        </div>
+        <button class="alert-close" onclick="this.parentElement.remove()">×</button>
+      `;
+
+      container.appendChild(alert);
+
+      setTimeout(() => {
+        alert.classList.add('closing');
+        setTimeout(() => alert.remove(), 300);
+      }, 5000);
+    }
+
+    function confirm4Day(appointmentId) {
+      var button = document.getElementById("confirm4Day_" + appointmentId);
+      button.disabled = true;
+      button.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Confirming...';
+
+      google.script.run
+        .withSuccessHandler(function(response) {
+          if (response.success) {
+            showAlert(response.message, "success");
+            refreshAppointmentRow(appointmentId, response.confirmationDate, response.confirmedBy, '4-Day');
+          } else {
+            showAlert(response.message, "error");
+            button.disabled = false;
+            button.innerHTML = "4-Day Confirm";
+          }
+        })
+        .confirmAppointment4Day(appointmentId, sessionToken);
+    }
+
+    function confirm1Day(appointmentId) {
+      var button = document.getElementById("confirm1Day_" + appointmentId);
+      button.disabled = true;
+      button.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Confirming...';
+
+      google.script.run
+        .withSuccessHandler(function(response) {
+          if (response.success) {
+            showAlert(response.message, "success");
+            refreshAppointmentRow(appointmentId, response.confirmationDate, response.confirmedBy, '1-Day');
+          } else {
+            showAlert(response.message, "error");
+            button.disabled = false;
+            button.innerHTML = "1-Day Confirm";
+          }
+        })
+        .confirmAppointment1Day(appointmentId, sessionToken);
+    }
+
+    function editAppointment(appointmentId) {
+      // Show save and cancel buttons
+      document.getElementById('save_' + appointmentId).style.display = 'inline-block';
+      document.getElementById('cancelEdit_' + appointmentId).style.display = 'inline-block';
+      
+      // Load appointment types and doctors for dropdowns
+      loadAppointmentTypesForEdit(appointmentId);
+      loadDoctorsForEdit(appointmentId);
+      
+      // Show dropdowns and hide display spans
+      document.getElementById('type_' + appointmentId).style.display = 'inline-block';
+      document.getElementById('type_display_' + appointmentId).style.display = 'none';
+      document.getElementById('doctor_' + appointmentId).style.display = 'inline-block';
+      document.getElementById('doctor_display_' + appointmentId).style.display = 'none';
+      
+      // Show plan input and hide display
+      document.getElementById('procedureInputContainer_' + appointmentId).classList.remove('d-none');
+      document.getElementById('plan_display_' + appointmentId).style.display = 'none';
+      
+      // Make remarks editable
+      document.getElementById('remarks_' + appointmentId).setAttribute('contenteditable', 'true');
+      
+      // Initialize procedure input
+      initProcedureInput(appointmentId);
+    }
+
+    function loadAppointmentTypesForEdit(appointmentId) {
+      google.script.run
+        .withSuccessHandler(function(response) {
+          if (response.success) {
+            const typeSelect = document.getElementById('type_' + appointmentId);
+            const currentType = document.getElementById('type_display_' + appointmentId).textContent;
+            
+            response.appointmentTypes.forEach(type => {
+              const option = document.createElement('option');
+              option.value = type;
+              option.textContent = type;
+              if (type === currentType) option.selected = true;
+              typeSelect.appendChild(option);
+            });
+          }
+        })
+        .getAppointmentTypes();
+    }
+
+    function loadDoctorsForEdit(appointmentId) {
+      google.script.run
+        .withSuccessHandler(function(response) {
+          if (response.success) {
+            const doctorSelect = document.getElementById('doctor_' + appointmentId);
+            const currentDoctor = document.getElementById('doctor_display_' + appointmentId).textContent;
+            
+            response.doctors.forEach(doctor => {
+              const option = document.createElement('option');
+              option.value = doctor;
+              option.textContent = doctor;
+              if (doctor === currentDoctor) option.selected = true;
+              doctorSelect.appendChild(option);
+            });
+          }
+        })
+        .getDoctors();
+    }
+
+    function saveAppointment(appointmentId) {
+      const remarks = document.getElementById('remarks_' + appointmentId).textContent;
+      const type = document.getElementById('type_' + appointmentId).value;
+      const doctor = document.getElementById('doctor_' + appointmentId).value;
+
+      // Get the selected procedures from the list
+      const selectedProceduresList = document.getElementById('selectedProceduresList_' + appointmentId);
+      const procedures = [];
+      selectedProceduresList.querySelectorAll('div').forEach(div => {
+        const text = div.querySelector('span').textContent;
+        if (text) {
+          procedures.push(text);
+        }
+      });
+
+      // If no procedures were found, try to get from the hidden field
+      let planData = '';
+      if (procedures.length > 0) {
+        planData = JSON.stringify(procedures);
+      } else {
+        const planOfAction = document.getElementById('planOfAction_' + appointmentId).value;
+        if (planOfAction) {
+          planData = planOfAction;
+        } else {
+          planData = '[]'; // Default to empty array if no plan exists
+        }
+      }
+
+      google.script.run
+        .withSuccessHandler(function(response) {
+          if (response.success) {
+            showAlert('Appointment updated successfully', 'success');
+            loadAppointments();
+          } else {
+            showAlert('Error updating appointment: ' + response.message, 'error');
+          }
+        })
+        .withFailureHandler(function(error) {
+          showAlert('Error updating appointment: ' + error, 'error');
+        })
+        .updateAppointmentDetails({
+          appointmentId: appointmentId,
+          type: type,
+          doctor: doctor,
+          plan: planData,
+          remarks: remarks,
+          sessionToken: sessionToken
+        });
+    }
+
+    function rescheduleAppointment(event) {
+      event.preventDefault();
+      const button = event.target.closest('button');
+      const appointmentId = button.getAttribute('data-appointment-id');
+      
+      if (!appointmentId) {
+        console.error('Appointment ID not found');
+        showAlert('Error: Appointment ID not found. Please try again.', 'error');
+        return;
+      }
+      
+      console.log('Rescheduling appointment ID:', appointmentId);
+      
+      const url = new URL(baseUrl);
+      url.searchParams.append('page', 'rescheduleAppointment');
+      url.searchParams.append('sessionToken', sessionToken);
+      //url.searchParams.append('appointmentId', appointmentId);
+      url.searchParams.append('appointmentId', encodeURIComponent(appointmentId));
+
+      
+      console.log('Redirecting to:', url.toString());
+      window.top.location.href = url.toString();
+    }
+
+    function refreshAppointmentRow(appointmentId, confirmationDate, confirmedBy, confirmationType) {
+      let containerId;
+      let buttonId;
+
+      if (confirmationType === '4-Day') {
+        containerId = "confirm4DayContainer_" + appointmentId;
+        buttonId = "confirm4Day_" + appointmentId;
+      } else if (confirmationType === '1-Day') {
+        containerId = "confirm1DayContainer_" + appointmentId;
+        buttonId = "confirm1Day_" + appointmentId;
+      }
+
+      if (containerId && buttonId) {
+        var button = document.getElementById(buttonId);
+        if(button){
+            button.innerHTML = "Confirmed: " + confirmationType.split('-')[0] + " Day " + confirmationDate + " by " + confirmedBy;
+            button.disabled = true;
+        }
+      }
+    }
+
+    function cancelEditAppointment(appointmentId) {
+      // Hide save and cancel buttons
+      document.getElementById('save_' + appointmentId).style.display = 'none';
+      document.getElementById('cancelEdit_' + appointmentId).style.display = 'none';
+      
+      // Hide dropdowns and show display spans
+      document.getElementById('type_' + appointmentId).style.display = 'none';
+      document.getElementById('type_display_' + appointmentId).style.display = 'inline';
+      document.getElementById('doctor_' + appointmentId).style.display = 'none';
+      document.getElementById('doctor_display_' + appointmentId).style.display = 'inline';
+      
+      // Hide plan input and show display
+      document.getElementById('procedureInputContainer_' + appointmentId).classList.add('d-none');
+      document.getElementById('plan_display_' + appointmentId).style.display = 'inline';
+      
+      // Make remarks non-editable
+      document.getElementById('remarks_' + appointmentId).setAttribute('contenteditable', 'false');
+      
+      // Reset plan to original value
+      const originalPlan = document.getElementById('plan_display_' + appointmentId).textContent;
+      document.getElementById('planOfAction_' + appointmentId).value = originalPlan;
+      document.getElementById('selectedProceduresList_' + appointmentId).innerHTML = '';
+    }
+
+    function deleteAppointment(appointmentId) {
+      // Show confirmation alert
+      showAlert('Are you sure you want to delete this appointment?', 'warning', 'Confirm Deletion');
+      
+      // Create and show confirmation buttons
+      const container = document.getElementById('alertContainer');
+      const alert = container.lastElementChild;
+      
+      // Add confirmation buttons
+      const buttonContainer = document.createElement('div');
+      buttonContainer.className = 'alert-buttons mt-3';
+      buttonContainer.innerHTML = `
+        <button class="btn btn-outline-secondary btn-sm me-2" onclick="this.closest('.custom-alert').remove()">No, Keep Appointment</button>
+        <button class="btn btn-danger btn-sm" onclick="showCallbackConfirmation('${appointmentId}', this)">Yes, Delete Appointment</button>
+      `;
+      alert.querySelector('.alert-content').appendChild(buttonContainer);
+    }
+
+    function showCallbackConfirmation(appointmentId, button) {
+      // Remove the first confirmation alert
+      button.closest('.custom-alert').remove();
+      
+      // Show second confirmation alert for callback
+      showAlert('Does the patient need to be called back?', 'info', 'Callback Required?');
+      
+      // Create and show callback confirmation buttons
+      const container = document.getElementById('alertContainer');
+      const alert = container.lastElementChild;
+      
+      // Add callback confirmation buttons
+      const buttonContainer = document.createElement('div');
+      buttonContainer.className = 'alert-buttons mt-3';
+      buttonContainer.innerHTML = `
+        <button class="btn btn-outline-secondary btn-sm me-2" onclick="handleDeletion('${appointmentId}', false, this)">No – proceed without callback</button>
+        <button class="btn btn-warning btn-sm" onclick="handleDeletion('${appointmentId}', true, this)">Yes – schedule callback</button>
+      `;
+      alert.querySelector('.alert-content').appendChild(buttonContainer);
+    }
+
+    function handleDeletion(appointmentId, callbackRequired, button) {
+      // Disable button and show loading state
+      button.disabled = true;
+      button.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Deleting...';
+      
+      // Remove the confirmation alert
+      button.closest('.custom-alert').remove();
+
+      // Add a loading indicator to the body
+      const loadingIndicator = document.createElement('div');
+      loadingIndicator.className = 'position-fixed w-100 h-100 d-flex justify-content-center align-items-center';
+      loadingIndicator.style.top = '0';
+      loadingIndicator.style.left = '0';
+      loadingIndicator.style.backgroundColor = 'rgba(255,255,255,0.7)';
+      loadingIndicator.style.zIndex = '9999';
+      loadingIndicator.innerHTML = '<div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div>';
+      loadingIndicator.id = 'deleteLoadingIndicator';
+      document.body.appendChild(loadingIndicator);
+
+      google.script.run
+        .withSuccessHandler(function(response) {
+          // Remove loading indicator
+          const indicator = document.getElementById('deleteLoadingIndicator');
+          if (indicator) indicator.remove();
+          
+          // Handle null or undefined response
+          if (response === null || response === undefined) {
+            console.log('Received null response from server, assuming success');
+            showAlert('Appointment deleted successfully' + (callbackRequired ? ' with callback scheduled' : ''), 'success');
+            loadAppointments();
+            return;
+          }
+          
+          // Handle proper response object
+          if (response.success) {
+            showAlert('Appointment deleted successfully' + (callbackRequired ? ' with callback scheduled' : ''), 'success');
+            loadAppointments();
+          } else {
+            showAlert(response.message || 'Error deleting appointment', 'error');
+          }
+        })
+        .withFailureHandler(function(error) {
+          // Remove loading indicator
+          const indicator = document.getElementById('deleteLoadingIndicator');
+          if (indicator) indicator.remove();
+          
+          console.error('Error in deleteAppointment:', error);
+          showAlert('Error occurred, but the appointment may have been deleted. Refreshing data...', 'warning');
+          setTimeout(loadAppointments, 1500);
+        })
+        .cancelAppointment(appointmentId, sessionToken, callbackRequired);
+    }
+
+
+    function showEmailConfirmation() {
+      var date = document.getElementById("selectedDate").value;
+      if (!date) {
+        showAlert("Please select a date.", "warning");
+        return;
+      }
+
+      // Create and show modal
+      var modal = document.createElement('div');
+      modal.className = 'modal fade show';
+      modal.style.display = 'block';
+      modal.innerHTML = `
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Confirm Email</h5>
+              <button type="button" class="btn-close" onclick="this.closest('.modal').remove()"></button>
+            </div>
+            <div class="modal-body">
+              <p>Are you sure you want to send the day overview report?</p>
+              <div id="emailPreview" class="mt-3 p-3 bg-light rounded">
+                <p><strong>Date:</strong> ${new Date(date).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
+                <p><strong>Recipient:</strong> <span id="recipientEmail">Loading...</span></p>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" onclick="this.closest('.modal').remove()">Cancel</button>
+              <button type="button" class="btn btn-primary" onclick="sendEmail('${date}')">
+                <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                Send Email
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(modal);
+
+      // Add backdrop
+      var backdrop = document.createElement('div');
+      backdrop.className = 'modal-backdrop fade show';
+      document.body.appendChild(backdrop);
+
+      // Get recipient email
+      google.script.run
+        .withSuccessHandler(function(response) {
+          if (response.success) {
+            document.getElementById('recipientEmail').textContent = response.email;
+          } else {
+            document.getElementById('recipientEmail').textContent = 'Error loading email';
+          }
+        })
+        .getUserEmail(sessionToken);
+    }
+
+    function sendEmail(date) {
+      var button = document.querySelector('.modal-footer .btn-primary');
+      var spinner = button.querySelector('.spinner-border');
+      var buttonText = button.innerHTML;
+      
+      // Show spinner and disable button
+      spinner.classList.remove('d-none');
+      button.disabled = true;
+      button.innerHTML = spinner.outerHTML + ' Sending...';
+
+      google.script.run
+        .withSuccessHandler(function(response) {
+          // Remove modal
+          document.querySelector('.modal').remove();
+          document.querySelector('.modal-backdrop').remove();
+          
+          if (response.success) {
+            // Show success animation
+            showSuccessAnimation();
+            showAlert(`Email sent successfully to ${response.recipient}`, "success");
+          } else {
+            showAlert("Failed to send email: " + response.message, "error");
+          }
+        })
+        .withFailureHandler(function(error) {
+          // Remove modal
+          document.querySelector('.modal').remove();
+          document.querySelector('.modal-backdrop').remove();
+          
+          showAlert("Error sending email: " + error, "error");
+        })
+        .sendDayOverviewEmail(date, sessionToken);
+    }
+
+    function showSuccessAnimation() {
+      var animation = document.createElement('div');
+      animation.className = 'success-animation';
+      animation.innerHTML = `
+        <div class="checkmark">
+          <svg class="checkmark-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+            <circle class="checkmark-circle" cx="26" cy="26" r="25" fill="none"/>
+            <path class="checkmark-check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+          </svg>
+        </div>
+      `;
+      document.body.appendChild(animation);
+      
+      setTimeout(() => {
+        animation.remove();
+      }, 2000);
+    }
+
+    // Add helper function to choose badge color based on PatientType
+    function getMemberBadgeClass(type) {
+      console.log('getMemberBadgeClass received:', type, typeof type);
+      
+      if (!type || type === 'undefined' || type === '') {
+        console.log('No member type, using default');
+        return "bg-secondary";
+      }
+      
+      // Make sure it's a string and uppercase for comparison
+      const typeStr = String(type).toUpperCase();
+      console.log('Normalized member type:', typeStr);
+      
+      if (typeStr === "NEW") return "bg-success";
+      if (typeStr === "OLD") return "bg-primary";
+      if (typeStr.includes("REFER")) return "bg-warning";
+      if (typeStr === "GUEST") return "bg-info";
+      
+      console.log('Using fallback color for:', typeStr);
+      return "bg-dark";
+    }
+
+    let planOptions = [];
+    function loadPlanOfActionOptions() {
+      google.script.run
+        .withSuccessHandler(r => { if (r.success) planOptions = r.options; })
+        .getPlanOfActionOptions();
+    }
+
+    function initProcedureInput(appointmentId) {
+      const procedureInputContainer = document.getElementById('procedureInputContainer_' + appointmentId);
+      const procedureInput = document.getElementById('procedureInput_' + appointmentId);
+      const suggestionsDropdown = document.getElementById('suggestionsDropdown_' + appointmentId);
+      const eyeSelectionContainer = document.getElementById('eyeSelectionContainer_' + appointmentId);
+      const confirmEyeSelection = document.getElementById('confirmEyeSelection_' + appointmentId);
+      const selectedProceduresList = document.getElementById('selectedProceduresList_' + appointmentId);
+      const planOfAction = document.getElementById('planOfAction_' + appointmentId);
+      const planDisplay = document.getElementById('plan_display_' + appointmentId);
+
+      let selectedProcedures = [];
+      let currentProcedure = null;
+
+      // Initialize selected procedures from existing plan
+      try {
+        const existingPlan = planDisplay.textContent.trim();
+        if (existingPlan && existingPlan !== '-') {
+          try {
+            selectedProcedures = JSON.parse(existingPlan);
+          } catch (e) {
+            // If not JSON, treat as plain text
+            selectedProcedures = [existingPlan];
+          }
+          updateDisplay();
+        }
+      } catch (e) {
+        console.error('Error initializing plan:', e);
+        selectedProcedures = [];
+      }
+
+      // 1. Autocomplete as you type
+      procedureInput.addEventListener('input', function() {
+        const term = this.value.toLowerCase();
+        suggestionsDropdown.innerHTML = '';
+        if (term.length < 1) {
+          suggestionsDropdown.style.display = 'none';
+          return;
+        }
+        planOptions
+          .filter(opt => opt.name.toLowerCase().startsWith(term))
+          .forEach(opt => {
+            const item = document.createElement('div');
+            item.className = 'suggestion-item list-group-item list-group-item-action';
+            item.textContent = opt.name;
+            item.addEventListener('click', () => {
+              procedureInput.value = opt.name;
+              suggestionsDropdown.style.display = 'none';
+              currentProcedure = opt;
+              if (opt.requiresEyeSelection) {
+                eyeSelectionContainer.classList.remove('d-none');
+              } else {
+                addProcedureToSelection(opt.name);
+                procedureInput.value = '';
+              }
+            });
+            suggestionsDropdown.appendChild(item);
+          });
+        suggestionsDropdown.style.display = suggestionsDropdown.childElementCount ? 'block' : 'none';
+      });
+
+      // 2. Hide suggestions if clicking outside the input area
+      document.addEventListener('click', e => {
+        if (!procedureInputContainer.contains(e.target)) {
+          suggestionsDropdown.style.display = 'none';
+        }
+      });
+
+      // 3. Confirm eye (RE/LE/BE) when required
+      confirmEyeSelection.addEventListener('click', () => {
+        const sel = document.querySelector('input[name="eyeSelection_' + appointmentId + '"]:checked');
+        if (!sel) {
+          alert('Please select an eye');
+          return;
+        }
+        addProcedureToSelection(`${currentProcedure.name} (${sel.value})`);
+        currentProcedure = null;
+        eyeSelectionContainer.classList.add('d-none');
+        procedureInput.value = '';
+      });
+
+      function addProcedureToSelection(text) {
+        selectedProcedures.push(text);
+        updateDisplay();
+        updateHiddenField();
+      }
+
+      function updateDisplay() {
+        selectedProceduresList.innerHTML = '';
+        selectedProcedures.forEach((p, i) => {
+          const div = document.createElement('div');
+          div.innerHTML = `<span>${p}</span><span class="remove-procedure" data-i="${i}">❌</span>`;
+          selectedProceduresList.appendChild(div);
+        });
+        document.querySelectorAll('.remove-procedure').forEach(btn => {
+          btn.onclick = () => {
+            selectedProcedures.splice(btn.dataset.i, 1);
+            updateDisplay();
+            updateHiddenField();
+          };
+        });
+      }
+
+      function updateHiddenField() {
+        planOfAction.value = JSON.stringify(selectedProcedures);
+        planDisplay.textContent = selectedProcedures.join(' / ');
+      }
+    }
+
+    // Update the formatPlanOfAction function
+    function formatPlanOfAction(plan) {
+      if (!plan) return '';
+      
+      try {
+        const planData = JSON.parse(plan);
+        let html = '<div class="plan-of-action-container"><ul class="plan-of-action-list">';
+        
+        if (Array.isArray(planData)) {
+          planData.forEach((item) => {
+            html += `
+              <li class="plan-of-action-item">
+                <span class="plan-of-action-name">${item.name || 'Unnamed Procedure'}</span>
+                ${item.eye ? `<span class="eye-selection ${item.eye.toLowerCase()}">${item.eye}</span>` : ''}
+              </li>
+            `;
+          });
+        } else {
+          // Handle single object case
+          html += `
+            <li class="plan-of-action-item">
+              <span class="plan-of-action-name">${planData.name || 'Unnamed Procedure'}</span>
+              ${planData.eye ? `<span class="eye-selection ${planData.eye.toLowerCase()}">${planData.eye}</span>` : ''}
+            </li>
+          `;
+        }
+        
+        html += '</ul></div>';
+        return html;
+      } catch (e) {
+        console.error('Error formatting plan of action:', e);
+        return plan; // Return original string if parsing fails
+      }
+    }
+
+    // Update the edit mode function
+    function enterEditMode(appointmentId) {
+      const container = document.querySelector(`[data-appointment-id="${appointmentId}"]`);
+      const planContainer = container.querySelector('.plan-of-action-container');
+      
+      // Get current procedures
+      const currentProcedures = [];
+      const items = planContainer.querySelectorAll('.plan-of-action-item');
+      items.forEach(item => {
+        const name = item.querySelector('.plan-of-action-name').textContent;
+        const eye = item.querySelector('.eye-selection')?.textContent;
+        currentProcedures.push({ name, eye });
+      });
+
+      // Create edit mode HTML
+      let html = '<div class="plan-of-action-container edit-mode"><ul class="plan-of-action-list">';
+      
+      currentProcedures.forEach(proc => {
+        html += `
+          <li class="plan-of-action-item">
+            <span class="plan-of-action-name">${proc.name}</span>
+            ${proc.eye ? `<span class="eye-selection ${proc.eye.toLowerCase()}">${proc.eye}</span>` : ''}
+            <span class="remove-procedure" onclick="removeProcedure(this)">×</span>
+          </li>
+        `;
+      });
+
+      html += `
+        <li class="plan-of-action-item">
+          <input type="text" class="procedure-input" placeholder="Enter procedure name">
+          <select class="eye-select">
+            <option value="Right">Right</option>
+            <option value="Left">Left</option>
+            <option value="Both">Both</option>
+          </select>
+          <button onclick="addProcedure(this)">Add</button>
+        </li>
+      </ul></div>`;
+
+      planContainer.innerHTML = html;
+    }
+
+    function showExcelPreview() {
+      var date = document.getElementById("selectedDate").value;
+      if (!date) {
+        showAlert("Please select a date.", "warning");
+        return;
+      }
+
+      // Create and show modal
+      var modal = document.createElement('div');
+      modal.className = 'modal fade show';
+      modal.style.display = 'block';
+      modal.innerHTML = `
+        <div class="modal-dialog excel-preview-modal">
+          <div class="modal-content">
+            <div class="modal-header excel-preview-header">
+              <div>
+                <h5 class="modal-title excel-preview-title">Excel Preview - ${new Date(date).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</h5>
+                <small class="text-muted">Click on any appointment row to reschedule</small>
+              </div>
+              <button type="button" class="btn-close" onclick="closeExcelPreview()"></button>
+            </div>
+            <div class="modal-body">
+              <div class="excel-preview-container">
+                <table class="excel-preview-table">
+                  <thead>
+                    <tr>
+                      <th>Time</th>
+                      <th>MRD No</th>
+                      <th>Patient Name</th>
+                      <th>Age</th>
+                      <th>Gender</th>
+                      <th>Phone</th>
+                      <th>Member Type</th>
+                      <th>Appointment Type</th>
+                      <th>Doctor</th>
+                      <th>Plan of Action</th>
+                      <th>Remarks</th>
+                      <th>4-Day Confirm</th>
+                      <th>1-Day Confirm</th>
+                    </tr>
+                  </thead>
+                  <tbody id="excelPreviewBody">
+                    <tr>
+                      <td colspan="13" class="text-center">
+                        <div class="spinner-border text-primary" role="status">
+                          <span class="visually-hidden">Loading...</span>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+                <div class="pagination-controls">
+                  <button class="btn btn-outline-primary btn-sm" id="prevPage" disabled>Previous</button>
+                  <span class="pagination-info" id="pageInfo">Page 1 of 1</span>
+                  <button class="btn btn-outline-primary btn-sm" id="nextPage" disabled>Next</button>
+                  <select class="form-select form-select-sm page-size-selector" id="pageSize">
+                    <option value="10">10 per page</option>
+                    <option value="25">25 per page</option>
+                    <option value="50">50 per page</option>
+                    <option value="100">100 per page</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" onclick="closeExcelPreview()">Close</button>
+              <button type="button" class="btn btn-primary" onclick="printAppointments()">
+                <i class="fas fa-print"></i> Print
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(modal);
+
+      // Add backdrop
+      var backdrop = document.createElement('div');
+      backdrop.className = 'modal-backdrop fade show';
+      document.body.appendChild(backdrop);
+
+      // Prevent body scrolling
+      document.body.style.overflow = 'hidden';
+
+      // Load and display appointments
+      console.log('Fetching appointments for date:', date);
+      google.script.run
+        .withSuccessHandler(function(appointments) {
+          console.log('Appointments received:', appointments);
+          
+          if (!appointments) {
+            console.error('No appointments received from server');
+            document.getElementById('excelPreviewBody').innerHTML = 
+              '<tr><td colspan="13" class="text-center text-danger">No appointments found. Please try again.</td></tr>';
+            return;
+          }
+
+          if (!Array.isArray(appointments) || appointments.length === 0) {
+            document.getElementById('excelPreviewBody').innerHTML = 
+              '<tr><td colspan="13" class="text-center">No appointments found for this date.</td></tr>';
+            return;
+          }
+
+          // Filter appointments for the selected date
+          const selectedDate = new Date(date);
+          selectedDate.setHours(0, 0, 0, 0);
+          
+          console.log('Selected date details:', {
+            inputDate: date,
+            parsedDate: selectedDate,
+            localDateString: selectedDate.toLocaleDateString('en-CA', {
+              year: 'numeric',
+              month: '2-digit',
+              day: '2-digit'
+            }),
+            isoString: selectedDate.toISOString(),
+            timezoneOffset: selectedDate.getTimezoneOffset()
+          });
+          
+          let filteredAppointments = appointments.filter(appt => {
+            // Use AppointmentDate instead of BookingDate
+            if (!appt.AppointmentDate) return false;
+            
+            // Parse the appointment date string into a Date object
+            const apptDate = new Date(appt.AppointmentDate);
+            apptDate.setHours(0, 0, 0, 0);
+            
+            // Compare dates using local date string format
+            const selectedDateStr = selectedDate.toLocaleDateString('en-CA', {
+              year: 'numeric',
+              month: '2-digit',
+              day: '2-digit'
+            });
+            const apptDateStr = apptDate.toLocaleDateString('en-CA', {
+              year: 'numeric',
+              month: '2-digit',
+              day: '2-digit'
+            });
+            
+            console.log('Comparing dates:', {
+              selectedDate: selectedDateStr,
+              appointmentDate: apptDateStr,
+              originalAppointmentDate: appt.AppointmentDate,
+              appointmentDetails: {
+                parsedDate: apptDate,
+                isoString: apptDate.toISOString(),
+                timezoneOffset: apptDate.getTimezoneOffset(),
+                localDateString: apptDate.toLocaleDateString('en-CA', {
+                  year: 'numeric',
+                  month: '2-digit',
+                  day: '2-digit'
+                })
+              }
+            });
+            
+            return selectedDateStr === apptDateStr;
+          });
+          
+          console.log('Filtered appointments:', {
+            totalAppointments: appointments.length,
+            filteredCount: filteredAppointments.length,
+            firstFewAppointments: filteredAppointments.slice(0, 3).map(appt => ({
+              mrd: appt.MRDNo,
+              appointmentDate: appt.AppointmentDate,
+              bookingDate: appt.BookingDate,
+              parsedDate: new Date(appt.AppointmentDate).toLocaleDateString('en-CA', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit'
+              })
+            }))
+          });
+
+          // Sort appointments by time
+          filteredAppointments.sort((a, b) => {
+            const timeA = a.TimeSlot ? new Date(a.TimeSlot).getTime() : 0;
+            const timeB = b.TimeSlot ? new Date(b.TimeSlot).getTime() : 0;
+            return timeA - timeB;
+          });
+
+          // Initialize pagination
+          let currentPage = 1;
+          let pageSize = 10;
+          let totalPages = Math.ceil(filteredAppointments.length / pageSize);
+
+          function updatePagination() {
+            const startIndex = (currentPage - 1) * pageSize;
+            const endIndex = startIndex + pageSize;
+            const pageAppointments = filteredAppointments.slice(startIndex, endIndex);
+
+            const tbody = document.getElementById('excelPreviewBody');
+            tbody.innerHTML = '';
+
+            pageAppointments.forEach(appt => {
+              const row = document.createElement('tr');
+              // Add pointer cursor and hover effect class
+              row.className = 'clickable-row';
+              // Store the appointment ID as a data attribute
+              row.dataset.appointmentId = appt['AppointmentID'];
+              // Add title attribute for tooltip
+              row.title = 'Click to reschedule this appointment';
+              row.innerHTML = `
+                <td>${normalizeTimeSlot(appt['TimeSlot'])}</td>
+                <td>${appt['MRDNo'] || '-'}</td>
+                <td>${appt['PatientName'] || '-'}</td>
+                <td>${appt['Age'] || '-'}</td>
+                <td>${appt['Gender'] || '-'}</td>
+                <td>${appt['Phone'] || '-'}</td>
+                <td>${appt['PatientType'] || '-'}</td>
+                <td>${appt['AppointmentType'] || '-'}</td>
+                <td>${appt['Doctor'] || '-'}</td>
+                <td>${appt['PlanOfAction'] || '-'}</td>
+                <td>${appt['Remarks'] || '-'}</td>
+                <td>${appt['FourDayConfirmDate'] ? '✓' : '-'}</td>
+                <td>${appt['OneDayConfirmDate'] ? '✓' : '-'}</td>
+              `;
+              // Add click event to row
+              row.addEventListener('click', function() {
+                redirectToReschedule(appt['AppointmentID']);
+              });
+              tbody.appendChild(row);
+            });
+
+            // Update pagination controls
+            document.getElementById('prevPage').disabled = currentPage === 1;
+            document.getElementById('nextPage').disabled = currentPage === totalPages;
+            document.getElementById('pageInfo').textContent = 
+              `Page ${currentPage} of ${totalPages} (${filteredAppointments.length} appointments)`;
+          }
+
+          // Add event listeners for pagination
+          document.getElementById('prevPage').addEventListener('click', () => {
+            if (currentPage > 1) {
+              currentPage--;
+              updatePagination();
+            }
+          });
+
+          document.getElementById('nextPage').addEventListener('click', () => {
+            if (currentPage < totalPages) {
+              currentPage++;
+              updatePagination();
+            }
+          });
+
+          document.getElementById('pageSize').addEventListener('change', (e) => {
+            pageSize = parseInt(e.target.value);
+            currentPage = 1;
+            totalPages = Math.ceil(filteredAppointments.length / pageSize);
+            updatePagination();
+          });
+
+          // Initial display
+          updatePagination();
+        })
+        .withFailureHandler(function(error) {
+          console.error('Error fetching appointments:', error);
+          document.getElementById('excelPreviewBody').innerHTML = 
+            `<tr><td colspan="13" class="text-center text-danger">Error: ${error.message || 'Failed to load appointments'}</td></tr>`;
+        })
+        .getAppointmentsForDay(date);
+    }
+
+    function printAppointments() {
+      // Create print container
+      const printContainer = document.createElement('div');
+      printContainer.className = 'print-container';
+      
+      // Add date header
+      const date = document.getElementById("selectedDate").value;
+      const dateHeader = document.createElement('h2');
+      dateHeader.textContent = `Appointments for ${new Date(date).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}`;
+      printContainer.appendChild(dateHeader);
+      
+      // Add summary section
+      const summary = document.createElement('div');
+      summary.className = 'print-summary';
+      
+      // Get appointments from the table
+      const appointments = Array.from(document.querySelectorAll('#excelPreviewBody tr')).map(row => {
+        const cells = row.querySelectorAll('td');
+        return {
+          MRDNo: cells[1]?.textContent || '',
+          PatientType: cells[1]?.textContent?.startsWith('N') ? 'NEW' : 'OLD',
+          AppointmentType: 'REGULAR'
+        };
+      });
+      
+      // Calculate statistics
+      const stats = {
+        total: appointments.length,
+        new: appointments.filter(a => a.PatientType === 'NEW').length,
+        old: appointments.filter(a => a.PatientType === 'OLD').length,
+        waiting: appointments.filter(a => a.AppointmentType === 'WAITING LIST').length
+      };
+      
+      // Create summary grid
+      const summaryGrid = document.createElement('div');
+      summaryGrid.className = 'print-summary-grid';
+      summaryGrid.innerHTML = `
+        <div class="print-summary-item">
+          <div class="print-summary-label">Total Appointments</div>
+          <div class="print-summary-value">${stats.total}</div>
+        </div>
+        <div class="print-summary-item">
+          <div class="print-summary-label">New Patients</div>
+          <div class="print-summary-value">${stats.new}</div>
+        </div>
+        <div class="print-summary-item">
+          <div class="print-summary-label">Old Patients</div>
+          <div class="print-summary-value">${stats.old}</div>
+        </div>
+        <div class="print-summary-item">
+          <div class="print-summary-label">Waiting List</div>
+          <div class="print-summary-value">${stats.waiting}</div>
+        </div>
+      `;
+      
+      summary.appendChild(summaryGrid);
+      printContainer.appendChild(summary);
+      
+      // Add Plan of Action breakdown section
+      const planBreakdown = document.createElement('div');
+      planBreakdown.className = 'print-summary';
+      planBreakdown.style.marginTop = '20px';
+      
+      // Get all plan of actions from appointments
+      const planStats = new Map();
+      document.querySelectorAll('.appointment-card').forEach(card => {
+        const planBadges = card.querySelectorAll('.plan-badge');
+        planBadges.forEach(badge => {
+          // Get the plan text and clean it
+          let planText = badge.textContent.trim();
+          
+          // Remove eye specifications (RE, LE, BE) and any surrounding brackets
+          planText = planText.replace(/\s*\((RE|LE|BE)\)/i, '').trim();
+          
+          // Remove any remaining brackets and their contents
+          planText = planText.replace(/\s*\([^)]*\)/g, '').trim();
+          
+          // Skip empty plans
+          if (planText) {
+            planStats.set(planText, (planStats.get(planText) || 0) + 1);
+          }
+        });
+      });
+      
+      // Sort plans by count
+      const sortedPlans = Array.from(planStats.entries())
+        .sort((a, b) => b[1] - a[1]);
+      
+      // Create plan breakdown grid
+      const planGrid = document.createElement('div');
+      planGrid.className = 'print-summary-grid';
+      
+      // Add header
+      const planHeader = document.createElement('h3');
+      planHeader.textContent = 'Plan of Action Breakdown';
+      planHeader.style.marginBottom = '15px';
+      planHeader.style.fontSize = '16px';
+      planHeader.style.color = '#333';
+      planBreakdown.appendChild(planHeader);
+      
+      // Add plan items
+      sortedPlans.forEach(([plan, count]) => {
+        const planItem = document.createElement('div');
+        planItem.className = 'print-summary-item';
+        planItem.innerHTML = `
+          <div class="print-summary-label">${plan}</div>
+          <div class="print-summary-value">${count}</div>
+        `;
+        planGrid.appendChild(planItem);
+      });
+      
+      planBreakdown.appendChild(planGrid);
+      printContainer.appendChild(planBreakdown);
+      
+      // Create print table
+      const printTable = document.createElement('table');
+      printTable.className = 'print-table';
+      
+      // Add table headers
+      const headerRow = document.createElement('tr');
+      const headers = ['Time', 'MRD No', 'Patient Name', 'Age', 'Gender', 'Phone', 'Plan of Action', 'Remarks'];
+      headers.forEach(header => {
+        const th = document.createElement('th');
+        th.textContent = header;
+        headerRow.appendChild(th);
+      });
+      printTable.appendChild(headerRow);
+      
+      // Add table body
+      const tbody = document.createElement('tbody');
+      document.querySelectorAll('.appointment-card').forEach(card => {
+        const row = document.createElement('tr');
+        
+        // Time
+        const timeCell = document.createElement('td');
+        timeCell.textContent = card.querySelector('.appointment-time')?.textContent || '-';
+        row.appendChild(timeCell);
+        
+        // MRD No
+        const mrdCell = document.createElement('td');
+        mrdCell.textContent = card.querySelector('.detail-item:first-child')?.textContent.replace('MRD:', '').trim() || '-';
+        row.appendChild(mrdCell);
+        
+        // Patient Name
+        const nameCell = document.createElement('td');
+        nameCell.textContent = card.querySelector('.appointment-patient')?.textContent || '-';
+        row.appendChild(nameCell);
+        
+        // Age and Gender
+        const ageGenderCell = document.createElement('td');
+        const ageGenderText = card.querySelector('.detail-item:nth-child(3)')?.textContent || '';
+        const ageMatch = ageGenderText.match(/Age:\s*(\d+)/);
+        ageGenderCell.textContent = ageMatch ? ageMatch[1] : '-';
+        row.appendChild(ageGenderCell);
+        
+        // Gender
+        const genderCell = document.createElement('td');
+        const genderMatch = ageGenderText.match(/Gender:\s*(\w+)/);
+        genderCell.textContent = genderMatch ? genderMatch[1] : '-';
+        row.appendChild(genderCell);
+        
+        // Phone
+        const phoneCell = document.createElement('td');
+        phoneCell.textContent = card.querySelector('.detail-item:nth-child(2)')?.textContent.replace('Phone:', '').trim() || '-';
+        row.appendChild(phoneCell);
+        
+        // Plan of Action
+        const planCell = document.createElement('td');
+        planCell.textContent = card.querySelector('.plan-badges')?.textContent.trim() || '-';
+        row.appendChild(planCell);
+        
+        // Remarks
+        const remarksCell = document.createElement('td');
+        remarksCell.textContent = card.querySelector('[id^="remarks_"]')?.textContent || '-';
+        row.appendChild(remarksCell);
+        
+        tbody.appendChild(row);
+      });
+      printTable.appendChild(tbody);
+      
+      printContainer.appendChild(printTable);
+      
+      // Add print container to body
+      document.body.appendChild(printContainer);
+      
+      // Print
+      window.print();
+      
+      // Remove print container after printing
+      setTimeout(() => {
+        printContainer.remove();
+      }, 1000);
+    }
+
+    function closeExcelPreview() {
+      // Remove modal and backdrop
+      const modal = document.querySelector('.modal.fade.show');
+      const backdrop = document.querySelector('.modal-backdrop.fade.show');
+      
+      if (modal) {
+        modal.remove();
+      }
+      
+      if (backdrop) {
+        backdrop.remove();
+      }
+      
+      // Restore body scrolling
+      document.body.style.overflow = '';
+    }
+
+    // Function to update summary bar statistics
+    function updateSummaryBar(appointments) {
+      if (!appointments) return;
+      
+      console.log('Updating summary bar with appointments:', appointments);
+      
+      // Initialize counters
+      const stats = {
+        total: appointments.length,
+        new: 0,
+        old: 0,
+        waiting: 0
+      };
+      
+      // Count appointments
+      appointments.forEach((appt, index) => {
+        // Count by MRD number prefix (N for NEW, S for OLD)
+        const mrdNo = (appt.MRDNo || '').toString().trim().toUpperCase();
+        
+        if (mrdNo.startsWith('N')) {
+          stats.new++;
+        } else if (mrdNo.startsWith('S')) {
+          stats.old++;
+        }
+        
+        // Count by appointment type
+        if (appt.AppointmentType === 'WAITING LIST') stats.waiting++;
+      });
+      
+      // Log final stats before updating DOM
+      console.log('Final summary stats:', stats);
+      
+      // Update DOM elements
+      document.getElementById('summary-total').textContent = stats.total;
+      document.getElementById('summary-new').textContent = stats.new;
+      document.getElementById('summary-old').textContent = stats.old;
+      document.getElementById('summary-waiting').textContent = stats.waiting;
+      
+      // Update top procedures
+      updateTopProcedures(appointments);
+      
+      // Dispatch custom event for other components
+      const event = new CustomEvent('summaryUpdated', { detail: stats });
+      document.dispatchEvent(event);
+    }
+    
+    // Set up auto-refresh for summary bar
+    document.addEventListener('DOMContentLoaded', function() {
+      // Remove the 30-second interval refresh
+      // setInterval(function() {
+      //   const appointments = getAllAppointmentsFromDOM();
+      //   if (appointments.length > 0) {
+      //     updateSummaryBar(appointments);
+      //   }
+      // }, 30000);
+      
+      // Keep the card status change listener for manual updates
+      document.addEventListener('cardStatusChange', function(e) {
+        const appointments = getAllAppointmentsFromDOM();
+        updateSummaryBar(appointments);
+      });
+    });
+    
+    // Helper to extract appointment data from DOM
+    function getAllAppointmentsFromDOM() {
+        const appointments = [];
+        const cards = document.querySelectorAll('.appointment-card');
+        
+        cards.forEach(card => {
+            const isWaitingList = card.classList.contains('waiting-list');
+            const patientType = card.querySelector('.member-badge')?.textContent || '';
+            const appointmentType = isWaitingList ? 'WAITING LIST' : '';
+            const planOfAction = card.querySelector('[id^="plan_display_"]')?.textContent || '';
+            
+            // Get MRD number from the details section
+            const mrdElement = card.querySelector('.detail-item:first-child');
+            const mrdNo = mrdElement ? mrdElement.textContent.replace('MRD:', '').trim() : '';
+            
+            appointments.push({
+                MRDNo: mrdNo,
+                PatientType: patientType,
+                AppointmentType: appointmentType,
+                PlanOfAction: planOfAction
+            });
+        });
+        
+        return appointments;
+    }
+    
+    // Dispatch cardStatusChange event when editing appointment
+    const originalSaveAppointment = saveAppointment;
+    saveAppointment = function(appointmentId) {
+      originalSaveAppointment(appointmentId);
+      document.dispatchEvent(new CustomEvent('cardStatusChange'));
+    };
+
+    // Add this new function for redirection
+    function redirectToReschedule(appointmentId) {
+      if (!appointmentId) {
+        console.error('Appointment ID not found');
+        showAlert('Error: Appointment ID not found. Please try again.', 'error');
+        return;
+      }
+      
+      // Show a loading indicator
+      const loadingOverlay = document.createElement('div');
+      loadingOverlay.className = 'loading-overlay';
+      loadingOverlay.innerHTML = `
+        <div class="loading-spinner">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+          <p class="mt-2">Redirecting to appointment...</p>
+        </div>
+      `;
+      document.body.appendChild(loadingOverlay);
+      
+      console.log('Redirecting to reschedule appointment ID:', appointmentId);
+      closeExcelPreview(); // Close the modal first
+      
+      const url = new URL(baseUrl);
+      url.searchParams.append('page', 'rescheduleAppointment');
+      url.searchParams.append('sessionToken', sessionToken);
+      url.searchParams.append('appointmentId', encodeURIComponent(appointmentId));
+      
+      console.log('Redirecting to:', url.toString());
+      
+      // Short timeout to ensure the loading overlay is visible
+      setTimeout(() => {
+        window.top.location.href = url.toString();
+      }, 300);
+    }
+
+    // Add these new functions before the updateSummaryBar function
+    function getProcedureIcon(procedure) {
+      const lowerProc = procedure.toLowerCase();
+      if (lowerProc.includes('dil')) return '💧';
+      if (lowerProc.includes('ref')) return '👓';
+      if (lowerProc.includes('oct')) return '📊';
+      if (lowerProc.includes('hfa')) return '👁️';
+      if (lowerProc.includes('fundus') || lowerProc.includes('photo')) return '📸';
+      if (lowerProc.includes('at') || lowerProc.includes('a-scan')) return '🛠️';
+      return '📋';
+    }
+
+    function analyzeProcedures(appointments) {
+      const procedureCounts = new Map();
+      
+      appointments.forEach(appt => {
+        const plan = appt.PlanOfAction || '';
+        if (!plan || plan === '-') return;
+        
+        try {
+          // Try to parse as JSON first
+          const procedures = JSON.parse(plan);
+          const procArray = Array.isArray(procedures) ? procedures : [procedures];
+          
+          procArray.forEach(proc => {
+            let procName = typeof proc === 'object' ? proc.name : proc.toString().trim();
+            
+            // Remove eye specifications (LE, RE, BE) from the procedure name
+            procName = procName.replace(/\s*\((RE|LE|BE)\)$/i, '').trim();
+            
+            if (procName) {
+              procedureCounts.set(procName, (procedureCounts.get(procName) || 0) + 1);
+            }
+          });
+        } catch (e) {
+          // If not JSON, split by common separators
+          const procedures = plan.split(/[/,;]/);
+          procedures.forEach(proc => {
+            let procName = proc.trim();
+            
+            // Remove eye specifications (LE, RE, BE) from the procedure name
+            procName = procName.replace(/\s*\((RE|LE|BE)\)$/i, '').trim();
+            
+            if (procName) {
+              procedureCounts.set(procName, (procedureCounts.get(procName) || 0) + 1);
+            }
+          });
+        }
+      });
+      
+      // Convert to array and sort by count
+      return Array.from(procedureCounts.entries())
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 7); // Get top 7
+    }
+
+    function updateTopProcedures(appointments) {
+      const topProcedures = analyzeProcedures(appointments);
+      const container = document.getElementById('topProcedures');
+      container.innerHTML = '';
+      
+      topProcedures.forEach(([procedure, count]) => {
+        const icon = getProcedureIcon(procedure);
+        const item = document.createElement('div');
+        item.className = 'summary-item';
+        item.setAttribute('title', procedure);
+        item.innerHTML = `
+          <span class="summary-label">${icon}</span>
+          <span class="summary-value">${count}</span>
+        `;
+        container.appendChild(item);
+      });
+    }
+
+    // Add print event listeners to expand accordions
+    window.addEventListener('beforeprint', function() {
+      // Expand all hour groups before printing
+      const hourGroups = document.querySelectorAll('.hour-group');
+      hourGroups.forEach(group => {
+        group.setAttribute('open', 'true');
+      });
+      
+      // Expand all appointment cards
+      const appointmentCards = document.querySelectorAll('.appointment-card');
+      appointmentCards.forEach(card => {
+        card.classList.add('expanded');
+      });
+    });
+
+    window.addEventListener('afterprint', function() {
+      // Optional: Collapse back after printing (comment out if you want them to stay open)
+      // const hourGroups = document.querySelectorAll('.hour-group');
+      // hourGroups.forEach(group => {
+      //   group.removeAttribute('open');
+      // });
+      
+      // const appointmentCards = document.querySelectorAll('.appointment-card');
+      // appointmentCards.forEach(card => {
+      //   card.classList.remove('expanded');
+      // });
+    });
+
+    // Add new print function after all existing functions
+    function printDayOverview() {
+      var date = document.getElementById("selectedDate").value;
+      if (!date) {
+        showAlert("Please select a date.", "warning");
+        return;
+      }
+
+      // Show loading indicator
+      showAlert("Generating print report...", "info");
+
+      // Call server to get the same formatted content as email
+      google.script.run
+        .withSuccessHandler(function(response) {
+          if (response.success) {
+            // Create print container and inject the exact email HTML
+            const printContainer = document.createElement('div');
+            printContainer.className = 'email-print-container';
+            printContainer.innerHTML = response.htmlContent;
+            
+            // Add print-specific styles
+            const printStyles = document.createElement('style');
+            printStyles.textContent = `
+              .email-print-container {
+                font-family: Arial, sans-serif;
+                color: #333;
+                line-height: 1.6;
+                max-width: 100%;
+                margin: 0;
+                padding: 20px;
+              }
+              
+              .email-print-container .header {
+                text-align: center;
+                margin-bottom: 30px;
+                border-bottom: 2px solid #ddd;
+                padding-bottom: 20px;
+              }
+              
+              .email-print-container .header h1 {
+                color: #2c3e50;
+                margin: 0;
+                font-size: 24px;
+              }
+              
+              .email-print-container .header p {
+                margin: 5px 0;
+                color: #7f8c8d;
+              }
+              
+              .email-print-container .summary {
+                display: flex;
+                justify-content: space-around;
+                background-color: #f8f9fa;
+                padding: 20px;
+                border-radius: 8px;
+                margin-bottom: 30px;
+              }
+              
+              .email-print-container .summary-item {
+                text-align: center;
+              }
+              
+              .email-print-container .summary-item h3 {
+                margin: 0;
+                font-size: 28px;
+                color: #3498db;
+              }
+              
+              .email-print-container .summary-item p {
+                margin: 5px 0 0 0;
+                font-weight: bold;
+                color: #2c3e50;
+              }
+              
+              .email-print-container .plan-summary {
+                margin-bottom: 30px;
+              }
+              
+              .email-print-container .plan-summary h2 {
+                color: #2c3e50;
+                border-bottom: 1px solid #ddd;
+                padding-bottom: 10px;
+              }
+              
+              .email-print-container .plan-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                gap: 10px;
+                margin-top: 15px;
+              }
+              
+              .email-print-container .plan-item {
+                background-color: #f8f9fa;
+                padding: 10px;
+                border-radius: 5px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+              }
+              
+              .email-print-container .appointments-table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-top: 20px;
+              }
+              
+              .email-print-container .appointments-table th,
+              .email-print-container .appointments-table td {
+                border: 1px solid #ddd;
+                padding: 12px 8px;
+                text-align: left;
+                font-size: 12px;
+              }
+              
+              .email-print-container .appointments-table th {
+                background-color: #f8f9fa;
+                font-weight: bold;
+                color: #2c3e50;
+              }
+              
+              .email-print-container .appointments-table tr:nth-child(even) {
+                background-color: #f9f9f9;
+              }
+              
+              .email-print-container .appointments-table tr.waiting-list {
+                background-color: #fff3cd;
+              }
+              
+              .email-print-container .footer {
+                margin-top: 30px;
+                text-align: center;
+                color: #7f8c8d;
+                font-size: 12px;
+                border-top: 1px solid #ddd;
+                padding-top: 20px;
+              }
+              
+              @media print {
+                .email-print-container {
+                  padding: 0;
+                }
+                
+                .email-print-container .appointments-table {
+                  font-size: 10px;
+                }
+                
+                .email-print-container .appointments-table th,
+                .email-print-container .appointments-table td {
+                  padding: 6px 4px;
+                }
+              }
+            `;
+            
+            // Add styles to head
+            document.head.appendChild(printStyles);
+            
+            // Add print container to body
+            document.body.appendChild(printContainer);
+            
+            // Hide existing content for print
+            const originalContainer = document.querySelector('.container');
+            const originalSummary = document.getElementById('daySummaryBar');
+            originalContainer.style.display = 'none';
+            originalSummary.style.display = 'none';
+            
+            // Print
+            window.print();
+            
+            // Restore original content and remove print container
+            setTimeout(() => {
+              originalContainer.style.display = 'block';
+              originalSummary.style.display = 'flex';
+              printContainer.remove();
+              printStyles.remove();
+            }, 1000);
+            
+            showAlert("Print preview ready!", "success");
+          } else {
+            showAlert("Error generating print report: " + response.message, "error");
+          }
+        })
+        .withFailureHandler(function(error) {
+          showAlert("Error generating print report: " + error.toString(), "error");
+        })
+        .getEmailFormattedDayOverview(date, sessionToken);
+    }
+
+
+    function archiveAppointmentClient(appointmentId) {
+  showAlert('Are you sure you want to archive this appointment?', 'warning', 'Confirm Archiving');
+  const container = document.getElementById('alertContainer');
+  const alert = container.lastElementChild;
+  const buttonContainer = document.createElement('div');
+  buttonContainer.className = 'alert-buttons mt-3';
+  buttonContainer.innerHTML = `
+    <button class="btn btn-outline-secondary btn-sm me-2" autofocus
+            onclick="this.closest('.custom-alert').remove()">
+      No, Keep Appointment
+    </button>
+    <button class="btn btn-warning btn-sm"
+            onclick="confirmArchive('${appointmentId}', this)">
+      Yes, Archive
+    </button>
+  `;
+  alert.querySelector('.alert-content').appendChild(buttonContainer);
+}
+
+function confirmArchive(appointmentId, button) {
+  button.disabled = true;
+  button.innerHTML = 
+    '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Archiving...';
+  button.closest('.custom-alert').remove();
+  google.script.run
+    .withSuccessHandler(response => {
+      if (response.success) {
+        showAlert(response.message, 'success');
+        loadAppointments();
+      } else {
+        showAlert('Error archiving appointment: ' + response.message, 'error');
+      }
+    })
+    .archiveAppointment(appointmentId, sessionToken);
+}
+
+function printPOA() {
+  var date = document.getElementById("selectedDate").value;
+  if (!date) {
+    showAlert("Please select a date.", "warning");
+    return;
+  }
+
+  // Show loading indicator
+  showAlert("Generating POA print report...", "info");
+
+  // Fetch appointments for the selected date (like printDayOverview)
+  google.script.run.withSuccessHandler(function(appointments) {
+    if (!appointments || !Array.isArray(appointments) || appointments.length === 0) {
+      showAlert("No appointments found for the selected date.", "warning");
+      return;
+    }
+
+    // Calculate summary statistics
+    let stats = {
+      total: appointments.length,
+      new: 0,
+      old: 0,
+      waiting: 0,
+      confirmed: 0
+    };
+    appointments.forEach(appt => {
+      const mrdNo = (appt.MRDNo || '').toString().trim().toUpperCase();
+      if (mrdNo.startsWith('N')) stats.new++;
+      else if (mrdNo.startsWith('S')) stats.old++;
+      if (appt.AppointmentType === 'WAITING LIST') stats.waiting++;
+      if (appt.FourDayConfirmDate || appt.OneDayConfirmDate) stats.confirmed++;
+    });
+
+    // Helper to clean plan name (remove eye spec LE, RE, BE)
+    function cleanPlanName(plan) {
+      if (!plan || plan === '-') return '-';
+      // Remove (LE), (RE), (BE) at end or in middle, with or without spaces
+      return plan.replace(/\s*\((LE|RE|BE)\)/gi, '').trim();
+    }
+
+    // Plan of Action breakdown (cleaned)
+    const planStats = new Map();
+    appointments.forEach(appt => {
+      let plan = appt.PlanOfAction || '-';
+      // Clean up plan string for grouping
+      try {
+        if (plan && plan !== '-') {
+          let parsed = JSON.parse(plan);
+          if (Array.isArray(parsed)) {
+            plan = parsed.map(p => (typeof p === 'object' ? p.name : p)).join(' / ');
+          } else if (typeof parsed === 'object') {
+            plan = parsed.name || '-';
+          } else {
+            plan = parsed;
+          }
+        }
+      } catch (e) {}
+      plan = plan || '-';
+      const cleaned = cleanPlanName(plan);
+      planStats.set(cleaned, (planStats.get(cleaned) || 0) + 1);
+    });
+
+    // Group appointments by cleaned Plan of Action
+    const groupedAppointments = {};
+    appointments.forEach(appt => {
+      let plan = appt.PlanOfAction || '-';
+      try {
+        if (plan && plan !== '-') {
+          let parsed = JSON.parse(plan);
+          if (Array.isArray(parsed)) {
+            plan = parsed.map(p => (typeof p === 'object' ? p.name : p)).join(' / ');
+          } else if (typeof parsed === 'object') {
+            plan = parsed.name || '-';
+          } else {
+            plan = parsed;
+          }
+        }
+      } catch (e) {}
+      plan = plan || '-';
+      const cleaned = cleanPlanName(plan);
+      if (!groupedAppointments[cleaned]) groupedAppointments[cleaned] = [];
+      groupedAppointments[cleaned].push(appt);
+    });
+
+    // Sort groups by earliest appointment time in each group
+    const sortedGroups = Object.entries(groupedAppointments)
+      .map(([plan, appts]) => {
+        appts.sort((a, b) => {
+          const tA = a.TimeSlot ? new Date(a.TimeSlot).getTime() : 0;
+          const tB = b.TimeSlot ? new Date(b.TimeSlot).getTime() : 0;
+          return tA - tB;
+        });
+        return { plan, appts };
+      })
+      .sort((a, b) => {
+        const tA = a.appts[0].TimeSlot ? new Date(a.appts[0].TimeSlot).getTime() : 0;
+        const tB = b.appts[0].TimeSlot ? new Date(b.appts[0].TimeSlot).getTime() : 0;
+        return tA - tB;
+      });
+
+    // Build HTML for print
+    let html = `<div class="header">
+      <h1>Appointments for ${date}</h1>
+      <p>Grouped by Plan of Action</p>
+    </div>`;
+
+    // Summary section
+    html += `<div class="summary">
+      <div class="summary-item"><h3>${stats.total}</h3><p>Total</p></div>
+      <div class="summary-item"><h3>${stats.confirmed}</h3><p>Confirmed</p></div>
+      <div class="summary-item"><h3>${stats.waiting}</h3><p>Waiting List</p></div>
+      <div class="summary-item"><h3>${stats.new}</h3><p>New</p></div>
+      <div class="summary-item"><h3>${stats.old}</h3><p>Old</p></div>
+    </div>`;
+
+    // Plan of Action breakdown
+    html += `<div class="plan-summary">
+      <h2>Plan of Action Breakdown</h2>
+      <div class="plan-grid">`;
+    Array.from(planStats.entries()).sort((a, b) => b[1] - a[1]).forEach(([plan, count]) => {
+      html += `<div class="plan-item"><span>${plan}</span><span>${count}</span></div>`;
+    });
+    html += `</div></div>`;
+
+    // Appointment details grouped by Plan of Action
+    html += `<div class="appointments-table-container">`;
+    sortedGroups.forEach(group => {
+      html += `<h3 style="margin-top:30px;">Plan of Action: ${group.plan}</h3>`;
+      html += `<table class="appointments-table">
+        <thead>
+          <tr>
+            <th>S.No</th>
+            <th>Time</th>
+            <th>MRD No</th>
+            <th>Patient Name</th>
+            <th>Age</th>
+            <th>Gender</th>
+            <th>Phone</th>
+            <th>Type</th>
+            <th>Appointment Type</th>
+            <th>Doctor</th>
+            <th>Plan of Action</th>
+            <th>Remarks</th>
+          </tr>
+        </thead>
+        <tbody>`;
+      group.appts.forEach((appt, idx) => {
+        // Human-readable Plan of Action
+        let planDisplay = '-';
+        let plan = appt.PlanOfAction || '-';
+        try {
+          if (plan && plan !== '-') {
+            let parsed = JSON.parse(plan);
+            if (Array.isArray(parsed)) {
+              planDisplay = parsed.map(p => (typeof p === 'object' ? p.name : p)).join(' / ');
+            } else if (typeof parsed === 'object') {
+              planDisplay = parsed.name || '-';
+            } else {
+              planDisplay = parsed;
+            }
+          }
+        } catch (e) {
+          planDisplay = plan;
+        }
+        html += `<tr>
+          <td>${idx + 1}</td>
+          <td>${appt.TimeSlot ? normalizeTimeSlot(appt.TimeSlot) : '-'}</td>
+          <td>${appt.MRDNo || '-'}</td>
+          <td>${appt.PatientName || '-'}</td>
+          <td>${appt.Age || '-'}</td>
+          <td>${appt.Gender || '-'}</td>
+          <td>${appt.Phone || '-'}</td>
+          <td>${appt.PatientType || '-'}</td>
+          <td>${appt.AppointmentType || '-'}</td>
+          <td>${appt.Doctor || '-'}</td>
+          <td>${planDisplay}</td>
+          <td>${appt.Remarks || '-'}</td>
+        </tr>`;
+      });
+      html += `</tbody></table>`;
+    });
+    html += `</div>`;
+
+    // Create print container
+    const printContainer = document.createElement('div');
+    printContainer.className = 'email-print-container';
+    printContainer.innerHTML = html;
+
+    // Add print-specific styles (reuse from printDayOverview)
+    const printStyles = document.createElement('style');
+    printStyles.textContent = `
+      .email-print-container { font-family: Arial, sans-serif; color: #333; line-height: 1.6; max-width: 100%; margin: 0; padding: 20px; }
+      .email-print-container .header { text-align: center; margin-bottom: 30px; border-bottom: 2px solid #ddd; padding-bottom: 20px; }
+      .email-print-container .header h1 { color: #2c3e50; margin: 0; font-size: 24px; }
+      .email-print-container .header p { margin: 5px 0; color: #7f8c8d; }
+      .email-print-container .summary { display: flex; justify-content: space-around; background-color: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 30px; }
+      .email-print-container .summary-item { text-align: center; }
+      .email-print-container .summary-item h3 { margin: 0; font-size: 28px; color: #3498db; }
+      .email-print-container .summary-item p { margin: 5px 0 0 0; font-weight: bold; color: #2c3e50; }
+      .email-print-container .plan-summary { margin-bottom: 30px; }
+      .email-print-container .plan-summary h2 { color: #2c3e50; border-bottom: 1px solid #ddd; padding-bottom: 10px; }
+      .email-print-container .plan-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin-top: 15px; }
+      .email-print-container .plan-item { background-color: #f8f9fa; padding: 10px; border-radius: 5px; display: flex; justify-content: space-between; align-items: center; }
+      .email-print-container .appointments-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+      .email-print-container .appointments-table th, .email-print-container .appointments-table td { border: 1px solid #ddd; padding: 12px 8px; text-align: left; font-size: 12px; }
+      .email-print-container .appointments-table th { background-color: #f8f9fa; font-weight: bold; color: #2c3e50; }
+      .email-print-container .appointments-table tr:nth-child(even) { background-color: #f9f9f9; }
+      @media print { .email-print-container { padding: 0; } .email-print-container .appointments-table { font-size: 10px; } .email-print-container .appointments-table th, .email-print-container .appointments-table td { padding: 6px 4px; } }
+    `;
+    document.head.appendChild(printStyles);
+    document.body.appendChild(printContainer);
+    const originalContainer = document.querySelector('.container');
+    const originalSummary = document.getElementById('daySummaryBar');
+    originalContainer.style.display = 'none';
+    originalSummary.style.display = 'none';
+    window.print();
+    setTimeout(() => {
+      originalContainer.style.display = 'block';
+      originalSummary.style.display = 'flex';
+      printContainer.remove();
+      printStyles.remove();
+    }, 1000);
+    showAlert("POA Print preview ready!", "success");
+  }).withFailureHandler(function(error) {
+    showAlert("Error generating POA print report: " + error.toString(), "error");
+  }).getAppointmentsForDay(date);
+}
+
+function generateFamilyIdentifier(appointmentId) {
+  // Remove any existing modal
+  const existing = document.getElementById('familyIdentifierModal');
+  if (existing) existing.remove();
+  
+  // Create modal
+  const modal = document.createElement('div');
+  modal.id = 'familyIdentifierModal';
+  modal.style.position = 'fixed';
+  modal.style.top = '0';
+  modal.style.left = '0';
+  modal.style.width = '100vw';
+  modal.style.height = '100vh';
+  modal.style.background = 'rgba(0,0,0,0.3)';
+  modal.style.display = 'flex';
+  modal.style.alignItems = 'center';
+  modal.style.justifyContent = 'center';
+  modal.style.zIndex = '9999';
+  modal.innerHTML = `
+    <div style="background: white; border-radius: 8px; padding: 32px 24px; min-width: 320px; max-width: 90vw; box-shadow: 0 2px 16px rgba(0,0,0,0.2);">
+      <h5>Assign Family Identifier</h5>
+      <p>Is this the first member of the family?</p>
+      <div id="familyIdManualEntry" style="display:none; margin-bottom: 12px;">
+        <label>Enter Family Identifier:</label>
+        <input type="text" id="manualFamilyIdInput" class="form-control" placeholder="e.g. F001" maxlength="6" style="margin-top: 4px;">
+      </div>
+      <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 16px;">
+        <button class="btn btn-primary" id="familyIdYesBtn">Yes</button>
+        <button class="btn btn-secondary" id="familyIdNoBtn">No</button>
+        <button class="btn btn-outline-secondary" id="familyIdCancelBtn">Cancel</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(modal);
+  
+  // Button handlers
+  document.getElementById('familyIdYesBtn').onclick = function() {
+    // Auto-generate
+    modal.remove();
+    showAlert('Generating family identifier...', 'info', 'Processing');
+    google.script.run
+      .withSuccessHandler(response => {
+        if (response.success) {
+          showAlert(`Family identifier ${response.familyIdentifier} generated successfully!`, 'success', 'Success');
+          // Refresh the appointments to show the updated family identifier
+          loadAppointments();
+        } else {
+          showAlert('Error generating family identifier: ' + response.message, 'error', 'Error');
+        }
+      })
+      .withFailureHandler(error => {
+        showAlert('Error generating family identifier: ' + error.toString(), 'error', 'Error');
+      })
+      .generateFamilyIdentifier(appointmentId, true);
+  };
+  
+  document.getElementById('familyIdNoBtn').onclick = function() {
+    // Show manual entry
+    document.getElementById('familyIdManualEntry').style.display = '';
+    document.getElementById('manualFamilyIdInput').focus();
+    // Change No button to Save
+    this.textContent = 'Save';
+    this.onclick = function() {
+      const val = document.getElementById('manualFamilyIdInput').value.trim();
+      if (!/^F\d{3}$/.test(val)) {
+        showAlert('Please enter a valid Family Identifier (e.g. F001)', 'warning', 'Invalid Format');
+        return;
+      }
+      
+      // Close modal and show success message
+      modal.remove();
+      showAlert(`Family identifier ${val} assigned.`, 'success', 'Success');
+      
+      // Update the appointment with the family identifier
+      // We'll use a simple approach - just update the family identifier field directly
+      google.script.run
+        .withSuccessHandler(response => {
+          if (response.success) {
+            // Refresh the appointments to show the updated family identifier
+            loadAppointments();
+          } else {
+            showAlert('Error updating family identifier: ' + response.message, 'error', 'Error');
+          }
+        })
+        .withFailureHandler(error => {
+          showAlert('Error updating family identifier: ' + error.toString(), 'error', 'Error');
+        })
+        .updateFamilyIdentifier(appointmentId, val, sessionToken);
+    };
+  };
+  
+  document.getElementById('familyIdCancelBtn').onclick = function() {
+    modal.remove();
+  };
+}
+
+
+
+  </script>
+</body>
+</html>
+
+
+

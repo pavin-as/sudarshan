@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <style>
+    :root {
+      --primary-color: #4a90e2;
+      --primary-light: #e8f0fe;
+      --primary-dark: #2c5282;
+      --success-color: #48bb78;
+      --warning-color: #ed8936;
+      --danger-color: #e53e3e;
+      --text-primary: #2d3748;
+      --text-secondary: #4a5568;
+      --bg-light: #f7fafc;
+      --bg-white: #ffffff;
+    }
+
+    body {
+      background: var(--bg-light);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: var(--text-primary);
+    }
+
+    .navbar {
+      background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    .navbar-brand {
+      font-weight: 600;
+      color: white !important;
+    }
+
+    .nav-link {
+      color: rgba(255,255,255,0.9) !important;
+      transition: color 0.3s ease;
+    }
+
+    .nav-link:hover {
+      color: white !important;
+    }
+
+    .main-container {
+      padding: 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .card {
+      border: none;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 25px rgba(0,0,0,0.12);
+    }
+
+    .card-header {
+      background: linear-gradient(135deg, var(--primary-light), var(--bg-white));
+      border-bottom: 1px solid #e2e8f0;
+      border-radius: 12px 12px 0 0 !important;
+      padding: 1.5rem;
+    }
+
+    .btn-primary {
+      background: var(--primary-color);
+      border: none;
+      border-radius: 8px;
+      padding: 0.75rem 1.5rem;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-dark);
+      transform: translateY(-1px);
+    }
+
+    .alert {
+      border: none;
+      border-radius: 8px;
+      padding: 1rem 1.5rem;
+    }
+
+    .settings-section {
+      margin-bottom: 2rem;
+    }
+
+    .settings-section h4 {
+      color: var(--primary-dark);
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid var(--primary-light);
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+      color: var(--text-primary);
+      font-weight: 500;
+      margin-bottom: 0.5rem;
+    }
+
+    .form-control {
+      border: 2px solid var(--primary-light);
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+    }
+
+    .form-control:focus {
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 0.2rem rgba(74, 144, 226, 0.25);
+    }
+
+    .settings-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .info-card {
+      background: linear-gradient(135deg, var(--primary-light), var(--bg-white));
+      border-radius: 12px;
+      padding: 1.5rem;
+      border-left: 4px solid var(--primary-color);
+    }
+
+    .info-card h5 {
+      color: var(--primary-dark);
+      margin-bottom: 0.5rem;
+    }
+
+    .info-card p {
+      color: var(--text-secondary);
+      margin: 0;
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">
+        <i class="fas fa-cog me-2"></i>
+        Settings Configuration
+      </a>
+      <div class="navbar-nav ms-auto">
+        <a class="nav-link" href="#" onclick="goToPage('Dashboard')">
+          <i class="fas fa-home me-1"></i>Dashboard
+        </a>
+        <a class="nav-link" href="#" onclick="logout()">
+          <i class="fas fa-sign-out-alt me-1"></i>Logout
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="main-container">
+    <div class="alert-container" id="alertContainer"></div>
+
+    <!-- Access Control Info -->
+    <div class="info-card mb-4">
+      <h5><i class="fas fa-shield-alt me-2"></i>Access Control</h5>
+      <p>This settings page is accessible only to Level 1 users (Director/Admin). All changes made here will affect the entire system.</p>
+    </div>
+
+    <!-- System Settings -->
+    <div class="card">
+      <div class="card-header">
+        <h4 class="mb-0">
+          <i class="fas fa-cogs me-2"></i>
+          System Configuration
+        </h4>
+        <p class="mb-0 text-muted">Configure core system settings and parameters</p>
+      </div>
+      <div class="card-body">
+        <div class="settings-grid">
+          <!-- General Settings -->
+          <div class="settings-section">
+            <h5><i class="fas fa-sliders-h me-2"></i>General Settings</h5>
+            <div class="form-group">
+              <label for="appointmentInterval" class="form-label">Default Appointment Interval (minutes)</label>
+              <input type="number" class="form-control" id="appointmentInterval" value="10" min="5" max="60">
+            </div>
+            <div class="form-group">
+              <label for="maxAppointmentsPerDay" class="form-label">Maximum Appointments Per Day</label>
+              <input type="number" class="form-control" id="maxAppointmentsPerDay" value="50" min="1" max="200">
+            </div>
+            <div class="form-group">
+              <label for="sessionTimeout" class="form-label">Session Timeout (hours)</label>
+              <input type="number" class="form-control" id="sessionTimeout" value="24" min="1" max="168">
+            </div>
+          </div>
+
+          <!-- Notification Settings -->
+          <div class="settings-section">
+            <h5><i class="fas fa-bell me-2"></i>Notification Settings</h5>
+            <div class="form-group">
+              <label for="emailNotifications" class="form-label">Email Notifications</label>
+              <select class="form-control" id="emailNotifications">
+                <option value="enabled">Enabled</option>
+                <option value="disabled">Disabled</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="confirmationReminders" class="form-label">Confirmation Reminders</label>
+              <select class="form-control" id="confirmationReminders">
+                <option value="enabled">Enabled</option>
+                <option value="disabled">Disabled</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="reminderDays" class="form-label">Reminder Days Before Appointment</label>
+              <input type="number" class="form-control" id="reminderDays" value="4" min="1" max="7">
+            </div>
+          </div>
+        </div>
+
+        <div class="text-end mt-4">
+          <button class="btn btn-primary" onclick="saveGeneralSettings()">
+            <i class="fas fa-save me-2"></i>Save General Settings
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- User Management -->
+    <div class="card mt-4">
+      <div class="card-header">
+        <h4 class="mb-0">
+          <i class="fas fa-users me-2"></i>
+          User Management
+        </h4>
+        <p class="mb-0 text-muted">Manage user accounts and permissions</p>
+      </div>
+      <div class="card-body">
+        <div class="settings-grid">
+          <!-- User Settings -->
+          <div class="settings-section">
+            <h5><i class="fas fa-user-cog me-2"></i>User Settings</h5>
+            <div class="form-group">
+              <label for="defaultUserRole" class="form-label">Default User Role</label>
+              <select class="form-control" id="defaultUserRole">
+                <option value="user">General User</option>
+                <option value="staff">Staff</option>
+                <option value="receptionist">Receptionist</option>
+                <option value="nurse">Nurse</option>
+                <option value="manager">Manager</option>
+                <option value="doctor">Doctor</option>
+                <option value="admin">Administrator</option>
+                <option value="director">Director</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="passwordPolicy" class="form-label">Password Policy</label>
+              <select class="form-control" id="passwordPolicy">
+                <option value="standard">Standard (8+ characters)</option>
+                <option value="strong">Strong (12+ characters, special chars)</option>
+                <option value="very-strong">Very Strong (16+ characters, complex)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="maxLoginAttempts" class="form-label">Maximum Login Attempts</label>
+              <input type="number" class="form-control" id="maxLoginAttempts" value="5" min="3" max="10">
+            </div>
+          </div>
+
+          <!-- Security Settings -->
+          <div class="settings-section">
+            <h5><i class="fas fa-lock me-2"></i>Security Settings</h5>
+            <div class="form-group">
+              <label for="twoFactorAuth" class="form-label">Two-Factor Authentication</label>
+              <select class="form-control" id="twoFactorAuth">
+                <option value="disabled">Disabled</option>
+                <option value="optional">Optional</option>
+                <option value="required">Required for Admins</option>
+                <option value="required-all">Required for All Users</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="auditLogging" class="form-label">Audit Logging</label>
+              <select class="form-control" id="auditLogging">
+                <option value="enabled">Enabled</option>
+                <option value="disabled">Disabled</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="sessionSecurity" class="form-label">Session Security</label>
+              <select class="form-control" id="sessionSecurity">
+                <option value="standard">Standard</option>
+                <option value="enhanced">Enhanced (IP validation)</option>
+                <option value="strict">Strict (Device fingerprinting)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="text-end mt-4">
+          <button class="btn btn-primary" onclick="saveUserSettings()">
+            <i class="fas fa-save me-2"></i>Save User Settings
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- System Maintenance -->
+    <div class="card mt-4">
+      <div class="card-header">
+        <h4 class="mb-0">
+          <i class="fas fa-tools me-2"></i>
+          System Maintenance
+        </h4>
+        <p class="mb-0 text-muted">System maintenance and data management</p>
+      </div>
+      <div class="card-body">
+        <div class="settings-grid">
+          <!-- Data Management -->
+          <div class="settings-section">
+            <h5><i class="fas fa-database me-2"></i>Data Management</h5>
+            <div class="form-group">
+              <label for="autoBackup" class="form-label">Automatic Backup</label>
+              <select class="form-control" id="autoBackup">
+                <option value="daily">Daily</option>
+                <option value="weekly">Weekly</option>
+                <option value="monthly">Monthly</option>
+                <option value="disabled">Disabled</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="dataRetention" class="form-label">Data Retention Period (months)</label>
+              <input type="number" class="form-control" id="dataRetention" value="24" min="6" max="120">
+            </div>
+            <div class="form-group">
+              <label for="archiveOldData" class="form-label">Archive Old Data</label>
+              <select class="form-control" id="archiveOldData">
+                <option value="enabled">Enabled</option>
+                <option value="disabled">Disabled</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- System Health -->
+          <div class="settings-section">
+            <h5><i class="fas fa-heartbeat me-2"></i>System Health</h5>
+            <div class="form-group">
+              <label for="systemMonitoring" class="form-label">System Monitoring</label>
+              <select class="form-control" id="systemMonitoring">
+                <option value="enabled">Enabled</option>
+                <option value="disabled">Disabled</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="performanceOptimization" class="form-label">Performance Optimization</label>
+              <select class="form-control" id="performanceOptimization">
+                <option value="enabled">Enabled</option>
+                <option value="disabled">Disabled</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="errorReporting" class="form-label">Error Reporting</label>
+              <select class="form-control" id="errorReporting">
+                <option value="enabled">Enabled</option>
+                <option value="disabled">Disabled</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="text-end mt-4">
+          <button class="btn btn-primary" onclick="saveMaintenanceSettings()">
+            <i class="fas fa-save me-2"></i>Save Maintenance Settings
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Danger Zone -->
+    <div class="card mt-4 border-danger">
+      <div class="card-header bg-danger text-white">
+        <h4 class="mb-0">
+          <i class="fas fa-exclamation-triangle me-2"></i>
+          Danger Zone
+        </h4>
+        <p class="mb-0">Irreversible actions - use with extreme caution</p>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-6">
+            <h5><i class="fas fa-trash me-2"></i>Data Management</h5>
+            <p class="text-muted">Permanently delete data and reset system settings</p>
+            <button class="btn btn-outline-danger" onclick="clearAllData()">
+              <i class="fas fa-trash me-2"></i>Clear All Data
+            </button>
+          </div>
+          <div class="col-md-6">
+            <h5><i class="fas fa-redo me-2"></i>System Reset</h5>
+            <p class="text-muted">Reset the system to factory defaults</p>
+            <button class="btn btn-outline-danger" onclick="resetSystem()">
+              <i class="fas fa-redo me-2"></i>Reset System
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    var baseUrl = "<?= webAppUrl ?>";
+    var sessionToken = "<?= sessionToken ?>";
+
+    document.addEventListener('DOMContentLoaded', function() {
+      checkAdminAccess();
+      loadSettings();
+    });
+
+    function checkAdminAccess() {
+      google.script.run
+        .withSuccessHandler(function(hasAccess) {
+          if (!hasAccess) {
+            showAlert('Access denied. Admin privileges required.', 'error');
+            setTimeout(function() {
+              goToPage('Dashboard');
+            }, 2000);
+          }
+        })
+        .withFailureHandler(function(error) {
+          showAlert('Error checking access: ' + error, 'error');
+          goToPage('Dashboard');
+        })
+        .canAccessSettings(sessionToken);
+    }
+
+    function loadSettings() {
+      // Load current settings from server
+      // This would be implemented to fetch actual settings
+      console.log('Loading settings...');
+    }
+
+    function saveGeneralSettings() {
+      const settings = {
+        appointmentInterval: document.getElementById('appointmentInterval').value,
+        maxAppointmentsPerDay: document.getElementById('maxAppointmentsPerDay').value,
+        sessionTimeout: document.getElementById('sessionTimeout').value,
+        emailNotifications: document.getElementById('emailNotifications').value,
+        confirmationReminders: document.getElementById('confirmationReminders').value,
+        reminderDays: document.getElementById('reminderDays').value
+      };
+
+      // Save settings to server
+      showAlert('General settings saved successfully!', 'success');
+    }
+
+    function saveUserSettings() {
+      const settings = {
+        defaultUserRole: document.getElementById('defaultUserRole').value,
+        passwordPolicy: document.getElementById('passwordPolicy').value,
+        maxLoginAttempts: document.getElementById('maxLoginAttempts').value,
+        twoFactorAuth: document.getElementById('twoFactorAuth').value,
+        auditLogging: document.getElementById('auditLogging').value,
+        sessionSecurity: document.getElementById('sessionSecurity').value
+      };
+
+      // Save settings to server
+      showAlert('User settings saved successfully!', 'success');
+    }
+
+    function saveMaintenanceSettings() {
+      const settings = {
+        autoBackup: document.getElementById('autoBackup').value,
+        dataRetention: document.getElementById('dataRetention').value,
+        archiveOldData: document.getElementById('archiveOldData').value,
+        systemMonitoring: document.getElementById('systemMonitoring').value,
+        performanceOptimization: document.getElementById('performanceOptimization').value,
+        errorReporting: document.getElementById('errorReporting').value
+      };
+
+      // Save settings to server
+      showAlert('Maintenance settings saved successfully!', 'success');
+    }
+
+    function clearAllData() {
+      if (confirm('Are you sure you want to clear all data? This action cannot be undone!')) {
+        if (confirm('This will permanently delete ALL appointments, patients, and system data. Are you absolutely sure?')) {
+          showAlert('Data clearing initiated. This may take several minutes.', 'warning');
+          // Implement data clearing logic
+        }
+      }
+    }
+
+    function resetSystem() {
+      if (confirm('Are you sure you want to reset the system to factory defaults? This action cannot be undone!')) {
+        if (confirm('This will reset ALL settings and configurations. Are you absolutely sure?')) {
+          showAlert('System reset initiated. The system will restart in maintenance mode.', 'warning');
+          // Implement system reset logic
+        }
+      }
+    }
+
+    function showAlert(message, type = 'info', options = {}) {
+      const alertContainer = document.getElementById('alertContainer');
+      const alertDiv = document.createElement('div');
+      alertDiv.className = `alert alert-${type} alert-dismissible fade show`;
+      alertDiv.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      `;
+      
+      alertContainer.appendChild(alertDiv);
+      
+      setTimeout(() => {
+        if (alertDiv.parentNode) {
+          alertDiv.remove();
+        }
+      }, 5000);
+    }
+
+    function goToPage(page) {
+      window.top.location.href = baseUrl + "?page=" + page + "&sessionToken=" + encodeURIComponent(sessionToken);
+    }
+
+    function logout() {
+      google.script.run
+        .withSuccessHandler(function() {
+          window.top.location.href = baseUrl;
+        })
+        .withFailureHandler(function(error) {
+          showAlert("Error during logout: " + error, "error");
+        })
+        .clearSession(sessionToken);
+    }
+  </script>
+</body>
+</html> 

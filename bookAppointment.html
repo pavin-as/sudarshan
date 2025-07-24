@@ -1,0 +1,2031 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <base target="_top">
+  <meta charset="UTF-8">
+  <title>Book Appointment - Sampada VR Eye Care</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    /* Color Variables */
+    :root {
+      --primary-color: #4a90e2;
+      --primary-light: #e8f0fe;
+      --primary-dark: #2c5282;
+      --success-color: #48bb78;
+      --warning-color: #ed8936;
+      --danger-color: #e53e3e;
+      --text-primary: #2d3748;
+      --text-secondary: #4a5568;
+      --bg-light: #f7fafc;
+      --bg-white: #ffffff;
+    }
+
+    .section-header {
+      font-weight: bold;
+      margin-top: 20px;
+      margin-bottom: 10px;
+      color: var(--text-primary);
+      font-size: 1.25rem;
+      position: relative;
+      padding-left: 15px;
+    }
+
+    .section-header::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 4px;
+      height: 20px;
+      background: var(--primary-color);
+      border-radius: 2px;
+    }
+
+    /* Age Input Styling */
+    .age-input-group {
+      transition: all 0.3s ease;
+    }
+    
+    .age-input-group input[type="number"] {
+      border: 2px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+    }
+    
+    .age-input-group input[type="number"]:focus {
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+      outline: none;
+    }
+    
+    .age-input-group .form-text {
+      color: var(--text-secondary);
+      font-size: 0.875rem;
+      margin-top: 4px;
+    }
+    
+    .btn-group .btn-check:checked + .btn {
+      background: var(--primary-color);
+      border-color: var(--primary-color);
+      color: white;
+    }
+    
+    #agePreview {
+      background: rgba(72, 187, 120, 0.1);
+      border: 1px solid rgba(72, 187, 120, 0.3);
+      border-radius: 6px;
+      padding: 8px 12px;
+    }
+
+    /* Modern Calendar Styling */
+    #calendarContainer {
+      background: var(--bg-white);
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+      padding: 20px;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    #calendarContainer::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--primary-color), var(--success-color));
+    }
+
+    #calendarContainer .day-header {
+      border: none;
+      padding: 12px 5px;
+      text-align: center;
+      font-weight: 600;
+      color: var(--text-secondary);
+      flex: 1;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    #calendarContainer .day {
+      border: none;
+      padding: 12px 5px;
+      text-align: center;
+      cursor: pointer;
+      flex: 1;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      border-radius: 12px;
+      margin: 3px;
+      font-weight: 500;
+      color: var(--text-primary);
+      position: relative;
+      overflow: hidden;
+    }
+
+    #calendarContainer .day::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      width: 0;
+      height: 2px;
+      background: var(--primary-color);
+      transition: all 0.3s ease;
+      transform: translateX(-50%);
+    }
+
+    #calendarContainer .day:hover:not(.disabled) {
+      background-color: var(--primary-light);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(74, 144, 226, 0.15);
+    }
+
+    #calendarContainer .day:hover:not(.disabled)::after {
+      width: 30%;
+    }
+
+    #calendarContainer .day.disabled {
+      background-color: var(--bg-light);
+      color: #a0aec0;
+      cursor: not-allowed;
+      opacity: 0.7;
+    }
+
+    #calendarContainer .day.selected {
+      background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+      color: white;
+      box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
+      transform: translateY(-2px);
+    }
+
+    /* Modern Loading Animation */
+    #calendarLoading {
+      display: none;
+      text-align: center;
+      padding: 40px;
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 16px;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 1000;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+      backdrop-filter: blur(8px);
+    }
+
+    .loading-spinner {
+      width: 60px;
+      height: 60px;
+      border: 4px solid var(--primary-light);
+      border-top: 4px solid var(--primary-color);
+      border-radius: 50%;
+      animation: spin 1s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite;
+      margin: 0 auto 20px;
+    }
+
+    .loading-text {
+      color: var(--text-primary);
+      font-weight: 600;
+      font-size: 1.1rem;
+      margin-top: 15px;
+      animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+      position: relative;
+    }
+
+    .loading-text::after {
+      content: '...';
+      position: absolute;
+      animation: dots 1.5s infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.6; }
+      50% { opacity: 1; }
+    }
+
+    @keyframes dots {
+      0%, 20% { content: '.'; }
+      40% { content: '..'; }
+      60%, 100% { content: '...'; }
+    }
+
+    /* Calendar Navigation Buttons */
+    .calendar-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 20px 0;
+      padding: 0 10px;
+    }
+
+    .calendar-nav button {
+      background: var(--primary-color);
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .calendar-nav button:hover {
+      background: var(--primary-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(74, 144, 226, 0.2);
+    }
+
+    .calendar-nav button:active {
+      transform: translateY(0);
+    }
+
+    #calendarMonthYear {
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      text-transform: capitalize;
+      letter-spacing: 0.5px;
+    }
+
+    /* Date Display Styling */
+    #dateDisplay {
+      background: var(--bg-white);
+      border: 2px solid var(--primary-light);
+      border-radius: 12px;
+      padding: 12px 20px;
+      font-weight: 500;
+      color: var(--text-primary);
+      transition: all 0.3s ease;
+      cursor: pointer;
+      width: 200px;
+      margin-bottom: 20px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    #dateDisplay:hover {
+      border-color: var(--primary-color);
+      box-shadow: 0 4px 12px rgba(74, 144, 226, 0.1);
+      transform: translateY(-2px);
+    }
+
+    #dateDisplay::after {
+      content: '📅';
+      position: absolute;
+      right: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      opacity: 0.5;
+      transition: opacity 0.3s ease;
+    }
+
+    #dateDisplay:hover::after {
+      opacity: 1;
+    }
+
+    /* Weekday header styling */
+    #calendarContainer .day-header {
+      border: 1px solid #ccc;
+      padding: 5px;
+      text-align: center;
+      font-weight: bold;
+      flex: 1;
+    }
+    #calendarContainer .day {
+      border: 1px solid #ccc;
+      padding: 5px;
+      text-align: center;
+      cursor: pointer;
+      flex: 1;
+    }
+    #calendarContainer .day.disabled {
+      background-color: #e9ecef;
+      cursor: not-allowed;
+    }
+    #calendarContainer .day.selected {
+      background-color: #b2dfdb;
+    }
+
+    /* Add the new styles here - between existing style blocks */
+    #slotIntervalSection .btn-group {
+      width: 100%;
+    }
+    #slotIntervalSection .btn {
+      flex: 1;
+    }
+
+    /* Modern Alert System */
+    .alert-container {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-width: 400px;
+    }
+
+    .custom-alert {
+      background: var(--bg-white);
+      border-radius: 12px;
+      padding: 16px 20px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      transform: translateX(120%);
+      animation: slideIn 0.3s forwards;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .custom-alert::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 4px;
+    }
+
+    .custom-alert.success::before {
+      background: var(--success-color);
+    }
+
+    .custom-alert.error::before {
+      background: var(--danger-color);
+    }
+
+    .custom-alert.warning::before {
+      background: var(--warning-color);
+    }
+
+    .custom-alert.info::before {
+      background: var(--primary-color);
+    }
+
+    .alert-icon {
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .alert-icon.success {
+      background: rgba(72, 187, 120, 0.1);
+      color: var(--success-color);
+    }
+
+    .alert-icon.error {
+      background: rgba(229, 62, 62, 0.1);
+      color: var(--danger-color);
+    }
+
+    .alert-icon.warning {
+      background: rgba(237, 137, 54, 0.1);
+      color: var(--warning-color);
+    }
+
+    .alert-icon.info {
+      background: rgba(74, 144, 226, 0.1);
+      color: var(--primary-color);
+    }
+
+    .alert-content {
+      flex-grow: 1;
+    }
+
+    .alert-title {
+      font-weight: 600;
+      margin-bottom: 4px;
+      color: var(--text-primary);
+    }
+
+    .alert-message {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      line-height: 1.4;
+    }
+
+    .alert-close {
+      background: none;
+      border: none;
+      color: var(--text-secondary);
+      cursor: pointer;
+      padding: 4px;
+      opacity: 0.5;
+      transition: opacity 0.2s;
+    }
+
+    .alert-close:hover {
+      opacity: 1;
+    }
+
+    @keyframes slideIn {
+      to {
+        transform: translateX(0);
+      }
+    }
+
+    @keyframes slideOut {
+      to {
+        transform: translateX(120%);
+      }
+    }
+
+    .custom-alert.closing {
+      animation: slideOut 0.3s forwards;
+    }
+
+    /* Modern Dropdown Styling */
+    .form-select {
+      background-color: var(--bg-white);
+      border: 2px solid var(--primary-light);
+      border-radius: 12px;
+      padding: 12px 16px;
+      font-size: 1rem;
+      color: var(--text-primary);
+      transition: all 0.3s ease;
+      cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%234a90e2' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      background-size: 16px;
+      padding-right: 40px;
+    }
+
+    .form-select:hover {
+      border-color: var(--primary-color);
+      box-shadow: 0 4px 12px rgba(74, 144, 226, 0.1);
+    }
+
+    .form-select:focus {
+      border-color: var(--primary-color);
+      box-shadow: 0 4px 12px rgba(74, 144, 226, 0.15);
+      outline: none;
+    }
+
+    .form-select option {
+      padding: 12px;
+      font-size: 1rem;
+      color: var(--text-primary);
+    }
+
+    /* Custom Select Container */
+    .select-container {
+      position: relative;
+      margin-bottom: 1.5rem;
+    }
+
+    .select-container label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+      color: var(--text-primary);
+    }
+
+    .select-container::after {
+      content: '';
+      position: absolute;
+      right: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 0;
+      height: 0;
+      border-left: 6px solid transparent;
+      border-right: 6px solid transparent;
+      border-top: 6px solid var(--primary-color);
+      pointer-events: none;
+    }
+
+    /* Time Slot Dropdown Enhancement */
+    #timeSlot {
+      background-color: var(--bg-white);
+      border: 2px solid var(--primary-light);
+      border-radius: 12px;
+      padding: 12px 16px;
+      font-size: 1rem;
+      color: var(--text-primary);
+      transition: all 0.3s ease;
+      cursor: pointer;
+      width: 100%;
+    }
+
+    #timeSlot:hover {
+      border-color: var(--primary-color);
+      box-shadow: 0 4px 12px rgba(74, 144, 226, 0.1);
+    }
+
+    #timeSlot:focus {
+      border-color: var(--primary-color);
+      box-shadow: 0 4px 12px rgba(74, 144, 226, 0.15);
+      outline: none;
+    }
+
+    #timeSlot option {
+      padding: 12px;
+      font-size: 1rem;
+      color: var(--text-primary);
+    }
+
+    /* Empty State Styling */
+    .form-select:invalid,
+    #timeSlot:invalid {
+      color: var(--text-secondary);
+    }
+
+    .form-select option:first-child,
+    #timeSlot option:first-child {
+      color: var(--text-secondary);
+    }
+  </style>
+</head>
+<body>
+  <!-- Add this right after the body tag -->
+  <div class="alert-container" id="alertContainer"></div>
+
+  <div class="container my-4">
+    <h2 class="mb-4 text-center">Book Appointment</h2>
+    <!-- 1. Patient Selection Section -->
+    <div id="patientSelection" class="mb-4">
+      <div class="btn-group mb-3" role="group" aria-label="Patient Type">
+        <input type="radio" class="btn-check" name="patientType" id="existingPatient" value="existingPatient" autocomplete="off" checked>
+        <label class="btn btn-outline-primary" for="existingPatient">Existing Patient</label>
+        <input type="radio" class="btn-check" name="patientType" id="newPatient" value="newPatient" autocomplete="off">
+        <label class="btn btn-outline-primary" for="newPatient">New Patient</label>
+      </div>
+      <!-- Existing Patient Fields -->
+      <div id="existingPatientFields">
+        <div class="mb-3">
+          <label for="mrdNo" class="form-label">MRD No</label>
+          <input type="text" class="form-control" id="mrdNo" placeholder="Enter MRD Number">
+        </div>
+            <button class="btn btn-secondary mb-3" id="fetchDetailsBtn" onclick="fetchPatientDetails()">
+          <span class="normal-text">Fetch Details</span>
+          <span class="loading-text" style="display: none;">
+            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+            Loading...
+          </span>
+        </button>
+        <div id="patientDetails" style="display:none;">
+          <div class="mb-3">
+            <label for="patientName" class="form-label">Name</label>
+            <input type="text" class="form-control" id="patientName" readonly>
+          </div>
+          <div class="row mb-3">
+            <div class="col">
+              <label for="patientAge" class="form-label">Age</label>
+              <input type="text" class="form-control" id="patientAge" readonly>
+            </div>
+            <div class="col">
+              <label for="patientGender" class="form-label">Gender</label>
+              <input type="text" class="form-control" id="patientGender" readonly>
+            </div>
+          </div>
+          <div class="mb-3">
+            <label for="patientPhone" class="form-label">Phone</label>
+            <input type="text" class="form-control" id="patientPhone" readonly>
+          </div>
+          <div class="mb-3">
+            <label for="patientAddress" class="form-label">Address</label>
+            <input type="text" class="form-control" id="patientAddress" readonly>
+          </div>
+          <div class="mb-3">
+            <label for="existingPatientType" class="form-label">Patient Type</label>
+            <input type="text" class="form-control" id="existingPatientType" readonly>
+          </div>
+        </div>
+      </div>
+      <!-- New Patient Fields -->
+      <div id="newPatientFields" style="display:none;">
+        <div class="mb-3">
+          <label for="newPatientName" class="form-label">Name</label>
+          <input type="text" class="form-control" id="newPatientName" placeholder="Enter Name">
+        </div>
+        <div class="row mb-3">
+          <div class="col">
+            <label for="newPatientAge" class="form-label">Age</label>
+            <!-- Age Type Selection -->
+            <div class="btn-group mb-2 w-100" role="group" aria-label="Age type selection">
+              <input type="radio" class="btn-check" name="ageType" id="ageTypeYears" value="years" autocomplete="off" checked>
+              <label class="btn btn-outline-primary btn-sm" for="ageTypeYears">Years</label>
+              
+              <input type="radio" class="btn-check" name="ageType" id="ageTypeMonths" value="months" autocomplete="off">
+              <label class="btn btn-outline-primary btn-sm" for="ageTypeMonths">Months</label>
+              
+              <input type="radio" class="btn-check" name="ageType" id="ageTypeDays" value="days" autocomplete="off">
+              <label class="btn btn-outline-primary btn-sm" for="ageTypeDays">Days</label>
+            </div>
+            
+            <!-- Age Input Fields -->
+            <div id="ageInputContainer">
+              <!-- Years Input (default) -->
+              <div id="ageYearsInput" class="age-input-group">
+                <input type="number" class="form-control" id="ageYears" placeholder="Enter age in years" min="0" max="150">
+                <small class="form-text text-muted">For children 1 year and older</small>
+              </div>
+              
+              <!-- Months Input -->
+              <div id="ageMonthsInput" class="age-input-group" style="display: none;">
+                <input type="number" class="form-control" id="ageMonths" placeholder="Enter age in months" min="1" max="11">
+                <small class="form-text text-muted">For children 1-11 months old</small>
+              </div>
+              
+              <!-- Days Input -->
+              <div id="ageDaysInput" class="age-input-group" style="display: none;">
+                <input type="number" class="form-control" id="ageDays" placeholder="Enter age in days" min="0" max="30">
+                <small class="form-text text-muted">For newborns up to 30 days old</small>
+              </div>
+            </div>
+            
+            <!-- Hidden field to store the final age value -->
+            <input type="hidden" id="newPatientAge" name="newPatientAge">
+          </div>
+          <div class="col">
+            <label for="newPatientGender" class="form-label">Gender</label>
+            <input type="text" class="form-control" id="newPatientGender" placeholder="Enter Gender">
+          </div>
+        </div>
+        <div class="mb-3">
+          <label for="newPatientPhone" class="form-label">Phone</label>
+          <input type="text" class="form-control" id="newPatientPhone" placeholder="Enter Phone">
+        </div>
+        <div class="mb-3">
+          <label for="newPatientAddress" class="form-label">Address</label>
+          <input type="text" class="form-control" id="newPatientAddress" placeholder="Enter Address">
+        </div>
+        <div class="mb-3">
+          <label for="newPatientType" class="form-label">Patient Type</label>
+          <input type="text" class="form-control" id="newPatientType" placeholder="Enter Patient Type">
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. Appointment Details Section -->
+    <div id="appointmentDetails" class="mb-4">
+      <div class="mb-3">
+        <label for="appointmentType" class="form-label">Appointment Type</label>
+        <select class="form-select" id="appointmentType">
+          <option value="">Select Appointment Type</option>
+        </select>
+      </div>
+      <div class="mb-3">
+        <label for="doctor" class="form-label">Doctor</label>
+        <select class="form-select" id="doctor" onchange="loadDoctorSchedule()">
+          <option value="">Select a Doctor</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- 3. Appointment Date Selection -->
+    <div id="dateSelection" class="mb-4">
+      <h5 class="section-header">Select Appointment Date</h5>
+      <!-- Keep last-viewed month toggle -->
+      <label class="form-switch" style="margin-left:15px; font-weight:normal;">
+        <input type="checkbox" id="keepMonthToggle" />
+        <i class="form-icon"></i> Keep last-viewed month
+      </label>
+      <div id="dateDisplay" style="cursor:pointer; width:200px; margin-bottom:15px;">
+        Select Date
+      </div>
+      <div id="calendarContainer" style="position: relative;">
+        <!-- Calendar UI will be rendered here -->
+        <div id="calendarLoading">
+          <div class="loading-spinner"></div>
+          <div class="loading-text">Loading calendar...</div>
+        </div>
+      </div>
+      <div class="calendar-nav">
+        <button class="btn" onclick="prevMonth()"> &lt; Previous </button>
+        <span id="calendarMonthYear"></span>
+        <button class="btn" onclick="nextMonth()"> Next &gt; </button>
+      </div>
+    </div>
+
+    <!-- Add this above the timeSlotSection -->
+   <div id="slotIntervalSection" class="mb-3">
+     <label class="form-label">Time Slot Interval</label>
+       <div class="btn-group" role="group">
+       <input type="radio" class="btn-check" name="slotInterval" id="interval10" value="10" autocomplete="off" checked>
+      <label class="btn btn-outline-primary" for="interval10">10 Minutes</label>
+      <input type="radio" class="btn-check" name="slotInterval" id="interval5" value="5" autocomplete="off">
+     <label class="btn btn-outline-primary" for="interval5">5 Minutes</label>
+    </div>
+   </div>
+
+    <!-- 4. Appointment Type Rules & Time Slot Selection -->
+    <div id="timeSlotSection" class="mb-4">
+      <label for="timeSlot" class="form-label">Available Time Slot</label>
+      <select class="form-select" id="timeSlot">
+        <option value="">Select a Time Slot</option>
+      </select>
+    </div>
+            <!-- 5. Additional Appointment Information -->
+        <div id="additionalInfo" class="mb-4">
+          <div class="mb-3">
+            <label for="procedureInput" class="form-label">Plan of Action</label>
+            <div id="planOfActionContainer">
+              
+              <!-- Autocomplete Input -->
+              <div id="procedureInputContainer" class="position-relative">
+                <input
+                  type="text"
+                  id="procedureInput"
+                  class="form-control"
+                  placeholder="Type to search…">
+                <div id="suggestionsDropdown" class="list-group position-absolute w-100"></div>
+              </div>
+
+              <!-- Eye Selection (hidden until needed) -->
+              <div id="eyeSelectionContainer" class="mt-2 d-none">
+                <span class="form-label">Select Eye:</span>
+                <div class="btn-group ms-2">
+                  <input type="radio" name="eyeSelection" id="re" value="RE" class="btn-check">
+                  <label for="re" class="btn btn-outline-secondary btn-sm">RE</label>
+
+                  <input type="radio" name="eyeSelection" id="le" value="LE" class="btn-check">
+                  <label for="le" class="btn btn-outline-secondary btn-sm">LE</label>
+
+                  <input type="radio" name="eyeSelection" id="be" value="BE" class="btn-check">
+                  <label for="be" class="btn btn-outline-secondary btn-sm">BE</label>
+                </div>
+              </div>
+
+              <!-- Selected Items List -->
+              <div id="selectedProceduresList" class="mt-2"></div>
+
+              <!-- Hidden JSON Field -->
+              <input type="hidden" id="planOfAction" name="planOfAction">
+            </div>
+          </div>
+
+          <!-- Remarks Field -->
+          <div class="mb-3">
+            <label for="remarks" class="form-label">Remarks</label>
+            <textarea
+              class="form-control"
+              id="remarks"
+              rows="4"
+              placeholder="Enter additional remarks"></textarea>
+          </div>
+        </div>
+
+   
+
+
+          <!-- Add vertical spacing above and below the Fixed Slot toggle -->
+    <div class="form-group mt-4 mb-4">
+      <div class="d-flex align-items-center">
+        <div class="form-check form-switch">
+          <input class="form-check-input" type="checkbox" id="fixedSlotToggle" name="fixedSlot">
+          <label class="form-check-label" for="fixedSlotToggle">
+            <i class="fas fa-lock me-2"></i>Fixed Slot
+          </label>
+        </div>
+        <small class="text-muted ms-3">
+          <i class="fas fa-info-circle"></i>
+          This slot will be reserved exclusively for this patient
+        </small>
+      </div>
+    </div>
+
+    <!-- Family Identifier Section -->
+    <div class="form-group mt-4 mb-4">
+      <div class="d-flex align-items-center">
+        <label class="form-label me-3">
+          <i class="fas fa-users me-2"></i>Family Identifier
+        </label>
+        <button type="button" class="btn btn-outline-info btn-sm" onclick="generateFamilyIdentifierForBooking()" title="Generate Family Identifier">
+          👨‍👩‍👧‍👦 Generate
+        </button>
+        <small class="text-muted ms-3">
+          <i class="fas fa-info-circle"></i>
+          Automatically generate a unique family identifier
+        </small>
+      </div>
+      <div class="mt-2">
+        <input type="text" class="form-control" id="familyIdentifier" name="familyIdentifier" placeholder="Family identifier will be generated automatically" readonly>
+      </div>
+    </div>
+
+    <!-- Add this after the appointmentType select element -->
+    <div id="urgencySection" class="mb-3" style="display: none;">
+      <label class="form-label">Degree of Urgency</label>
+      <div class="btn-group" role="group" aria-label="Urgency Level">
+        <input type="radio" class="btn-check" name="urgencyLevel" id="urgencyRed" value="Red" autocomplete="off">
+        <label class="btn btn-outline-danger" for="urgencyRed">Red</label>
+        
+        <input type="radio" class="btn-check" name="urgencyLevel" id="urgencyYellow" value="Yellow" autocomplete="off">
+        <label class="btn btn-outline-warning" for="urgencyYellow">Yellow</label>
+        
+        <input type="radio" class="btn-check" name="urgencyLevel" id="urgencyGreen" value="Green" autocomplete="off">
+        <label class="btn btn-outline-success" for="urgencyGreen">Green</label>
+      </div>
+    </div>
+
+    <!-- 6. Action Buttons -->
+    <div id="actionButtons" class="mb-4">
+       <button class="btn btn-primary" id="submitBtn" onclick="submitAppointment()">
+        <span class="normal-text">Submit</span>
+        <span class="loading-text" style="display: none;">
+          <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+          Processing...
+        </span>
+      </button>
+      <button class="btn btn-warning" onclick="resetForm()">Reset</button>
+      <button class="btn btn-danger" onclick="cancelAppointment()">Cancel</button>
+    </div>
+
+    <!-- 7. Navigation Buttons -->
+    <div id="navigationButtons" class="text-center">
+      <button class="btn btn-secondary" onclick="goToDashboard()">Back to Dashboard</button>
+      <button class="btn btn-danger" onclick="logout()">Logout</button>
+    </div>
+  </div>
+
+  <script>
+    // Global variables
+    let cachedHolidays = [];
+    let currentCalendarYear = new Date().getFullYear();
+    let currentCalendarMonth = new Date().getMonth(); // 0-indexed
+    let selectedAppointmentDate = null;
+    const sessionToken = "<?= sessionToken ?>";
+    const baseUrl = "<?= webAppUrl ?>";
+
+
+        // ←– Insert here:
+    let planOptions = [], selectedProcedures = [], currentProcedure = null;
+    function loadPlanOfActionOptions() {
+      google.script.run
+        .withSuccessHandler(r => { if (r.success) planOptions = r.options; })
+        .getPlanOfActionOptions();
+    }
+    // –→
+
+    function initProcedureInput() {
+      const procedureInputContainer = document.getElementById('procedureInputContainer');
+      const procedureInput          = document.getElementById('procedureInput');
+      const suggestionsDropdown     = document.getElementById('suggestionsDropdown');
+      const eyeSelectionContainer   = document.getElementById('eyeSelectionContainer');
+
+      // 1. Autocomplete as you type
+      procedureInput.addEventListener('input', function() {
+        const term = this.value.toLowerCase();
+        suggestionsDropdown.innerHTML = '';
+        if (term.length < 1) {
+          suggestionsDropdown.style.display = 'none';
+          return;
+        }
+        planOptions
+          .filter(opt => opt.name.toLowerCase().startsWith(term))
+          .forEach(opt => {
+            const item = document.createElement('div');
+            item.className = 'suggestion-item list-group-item list-group-item-action';
+            item.textContent = opt.name;
+            item.addEventListener('click', () => {
+              procedureInput.value = opt.name;
+              suggestionsDropdown.style.display = 'none';
+              currentProcedure = opt;
+              if (opt.requiresEyeSelection) {
+                eyeSelectionContainer.classList.remove('d-none');
+              } else {
+                addProcedureToSelection(opt.name);
+                procedureInput.value = '';
+              }
+            });
+            suggestionsDropdown.appendChild(item);
+          });
+        suggestionsDropdown.style.display = suggestionsDropdown.childElementCount ? 'block' : 'none';
+      });
+
+      // 2. Hide suggestions if clicking outside the input area
+      document.addEventListener('click', e => {
+        if (!procedureInputContainer.contains(e.target)) {
+          suggestionsDropdown.style.display = 'none';
+        }
+      });
+
+      // 3. Handle eye selection immediately
+      document.querySelectorAll('input[name="eyeSelection"]').forEach(radio => {
+        radio.addEventListener('change', () => {
+          const selectedEye = document.querySelector('input[name="eyeSelection"]:checked');
+          if (selectedEye && currentProcedure) {
+            addProcedureToSelection(`${currentProcedure.name} (${selectedEye.value})`);
+            currentProcedure = null;
+            eyeSelectionContainer.classList.add('d-none');
+            procedureInput.value = '';
+            // Clear the radio selection
+            selectedEye.checked = false;
+          }
+        });
+      });
+    }
+
+    function addProcedureToSelection(text) {
+      selectedProcedures.push(text);
+      updateDisplay(); updateHiddenField();
+    }
+    function updateDisplay() {
+      const c = document.getElementById('selectedProceduresList');
+      c.innerHTML = '';
+      selectedProcedures.forEach((p,i) => {
+        const div = document.createElement('div');
+        div.innerHTML = `<span>${p}</span><span class="remove-procedure" data-i="${i}">❌</span>`;
+        c.appendChild(div);
+      });
+      document.querySelectorAll('.remove-procedure').forEach(btn=>{
+        btn.onclick=()=>{ selectedProcedures.splice(btn.dataset.i,1); updateDisplay(); updateHiddenField(); };
+      });
+    }
+    function updateHiddenField() {
+      document.getElementById('planOfAction').value = JSON.stringify(selectedProcedures);
+    }
+    /*window.onload = () => {
+      // … your existing onload …
+      loadPlanOfActionOptions();
+      initProcedureInput();
+    };*/
+
+
+    var cachedDoctorData = {
+      doctor: "",
+      month: "",
+      availability: {},
+      bookedSlots: {},
+      exceptions: {}
+    };
+
+    function intersectArrays(arr1, arr2) {
+      return arr1.filter(item => arr2.indexOf(item) !== -1);
+    }
+
+    // Toggle between Existing and New Patient fields
+    document.getElementById('existingPatient').addEventListener('change', function() {
+      document.getElementById('existingPatientFields').style.display = 'block';
+      document.getElementById('newPatientFields').style.display = 'none';
+    });
+    document.getElementById('newPatient').addEventListener('change', function() {
+      document.getElementById('existingPatientFields').style.display = 'none';
+      document.getElementById('newPatientFields').style.display = 'block';
+    });
+
+    // Fetch patient details
+    function fetchPatientDetails() {
+      var mrd = document.getElementById('mrdNo').value.trim();
+      console.log("🔍 Starting fetchPatientDetails");  
+       console.log("📝 Raw MRD input:", mrd);
+
+      // Remove any single quotes that might be in the MRD No
+        mrd = mrd.replace(/'/g, '');
+        console.log("🧹 Cleaned MRD:", mrd);
+      if (!mrd) {
+         console.log("❌ No MRD number provided");
+        showAlert("Please enter an MRD No", "warning");
+        return;
+      }
+
+            // Show loading state
+      const fetchBtn = document.getElementById('fetchDetailsBtn');
+      fetchBtn.disabled = true;
+      fetchBtn.querySelector('.normal-text').style.display = 'none';
+      fetchBtn.querySelector('.loading-text').style.display = 'inline-block';
+
+        console.log("📤 Sending MRD to server:", mrd);
+       google.script.run
+        .withSuccessHandler(function(response) {
+          // Hide loading state
+          fetchBtn.disabled = false;
+          fetchBtn.querySelector('.normal-text').style.display = 'inline-block';
+          fetchBtn.querySelector('.loading-text').style.display = 'none';
+          console.log("📥 Server response:", response);
+          if (!response) {
+            console.log("❌ Null response from server");
+            showAlert("Error: No response from server. Please try again.", "error");
+            return;
+          }
+          if (!response.success) {
+            console.log("❌ Error response:", response);
+            showAlert(response.message || "Patient not found.", "error");
+            return;
+          }
+          var p = response.patient;
+          if (!p) {
+            console.log("❌ No patient data in response");
+            showAlert("Error: No patient data received. Please try again.", "error");
+            return;
+          }
+          console.log("✅ Patient found:", p);
+          document.getElementById('patientName').value = p.Name;
+          document.getElementById('patientAge').value = p.Age;
+          document.getElementById('patientGender').value = p.Gender;
+          document.getElementById('patientPhone').value = p.Phone;
+          document.getElementById('patientAddress').value = p.Address;
+          document.getElementById('existingPatientType').value = p.Type;
+          document.getElementById('patientDetails').style.display = 'block';
+          showAlert("Patient details loaded successfully", "success");
+        })
+        .withFailureHandler(function(error) {
+           // Hide loading state
+          fetchBtn.disabled = false;
+          fetchBtn.querySelector('.normal-text').style.display = 'inline-block';
+          fetchBtn.querySelector('.loading-text').style.display = 'none';
+          console.log("❌ Server error:", error);
+          showAlert("Error fetching patient details: " + error.message, "error");
+        })
+        .getPatientDetailsByMRD(mrd);
+        } 
+
+    // Load appointment types
+    function loadAppointmentTypes() {
+      google.script.run.withSuccessHandler(function(response) {
+        if (response.success) {
+          var selectElem = document.getElementById("appointmentType");
+          selectElem.innerHTML = '<option value="">Select Appointment Type</option>';
+          response.appointmentTypes.forEach(function(type) {
+            var option = document.createElement("option");
+            option.value = type;
+            option.textContent = type;
+            selectElem.appendChild(option);
+          });
+        } else {
+          alert("Error loading appointment types: " + response.message);
+        }
+      }).withFailureHandler(function(error) {
+        alert("Error loading appointment types: " + error.message);
+      }).getAppointmentTypes();
+    }
+
+    // Load doctors
+    function loadDoctors() {
+      google.script.run.withSuccessHandler(function(response) {
+        if (response.success) {
+          var doctorSelect = document.getElementById("doctor");
+          doctorSelect.innerHTML = '<option value="">Select a Doctor</option>';
+          response.doctors.forEach(function(doc) {
+            var option = document.createElement("option");
+            option.value = doc;
+            option.textContent = doc;
+            doctorSelect.appendChild(option);
+          });
+        } else {
+          alert("Error loading doctors: " + response.message);
+        }
+      }).withFailureHandler(function(error) {
+        alert("Error loading doctors: " + error.message);
+      }).getDoctors();
+    }
+
+    // Load holidays
+    function loadHolidays() {
+      google.script.run.withSuccessHandler(function(response) {
+        if (response.success) {
+          cachedHolidays = response.holidays;
+        } else {
+          cachedHolidays = [];
+        }
+      }).withFailureHandler(function(error) {
+        cachedHolidays = [];
+      }).getHolidays();
+    }
+
+    // Load calendar UI
+    function loadCalendar(year, month) {
+      currentCalendarYear = year;
+      currentCalendarMonth = month;
+      const calendarMonthYear = document.getElementById('calendarMonthYear');
+      const dateObj = new Date(year, month);
+      calendarMonthYear.textContent = dateObj.toLocaleString('default', { month: 'long', year: 'numeric' });
+      const calendarContainer = document.getElementById('calendarContainer');
+      calendarContainer.innerHTML = '';
+
+      // Add loading indicator back
+      const loadingDiv = document.createElement('div');
+      loadingDiv.id = 'calendarLoading';
+      loadingDiv.innerHTML = `
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Loading calendar...</div>
+      `;
+      calendarContainer.appendChild(loadingDiv);
+      loadingDiv.style.display = 'block';
+
+      // 1) Render weekday header row
+      const headerRow = document.createElement('div');
+      headerRow.className = 'd-flex';
+      ['Su','Mo','Tu','We','Th','Fr','Sa'].forEach(d => {
+        const cell = document.createElement('div');
+        cell.className = 'day-header flex-fill';
+        cell.textContent = d;
+        headerRow.appendChild(cell);
+      });
+      calendarContainer.appendChild(headerRow);
+
+      // 2) Render date cells
+      const firstDay = new Date(year, month, 1).getDay();
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
+      const today = new Date();
+      let day = 1;
+
+      // Get holidays first
+      google.script.run.withSuccessHandler(function(holidaysResponse) {
+        var holidays = (holidaysResponse && holidaysResponse.success) ? holidaysResponse.holidays : [];
+        
+        const doctorVal = document.getElementById('doctor').value;
+        if (!doctorVal) {
+          renderCalendar(holidays, []);
+        } else {
+          google.script.run.withSuccessHandler(function(leaveResponse) {
+            var leaveDays = (leaveResponse && leaveResponse.success && leaveResponse.leaveDates) 
+                            ? leaveResponse.leaveDates 
+                            : [];
+            renderCalendar(holidays, leaveDays);
+          }).getAllDoctorLeaveDays(doctorVal);
+        }
+      }).getHolidays();
+
+      function renderCalendar(holidays, leaveDays) {
+        // Hide loading indicator
+        document.getElementById('calendarLoading').style.display = 'none';
+
+        for (let i = 0; i < 6; i++) {
+          const rowDiv = document.createElement('div');
+          rowDiv.className = 'd-flex';
+          for (let j = 0; j < 7; j++) {
+            const cell = document.createElement('div');
+            cell.className = 'day flex-fill';
+            if ((i === 0 && j < firstDay) || day > daysInMonth) {
+              cell.innerHTML = '&nbsp;';
+            } else {
+              const currentDate = new Date(year, month, day);
+              const dateStr = formatLocalDate(currentDate);
+              cell.textContent = day;
+
+              if (
+                (year === today.getFullYear() && month === today.getMonth() && day < today.getDate()) ||
+                holidays.includes(dateStr) ||
+                leaveDays.includes(dateStr)
+              ) {
+                cell.classList.add('disabled');
+              } else {
+                let dayValue = day;
+                cell.onclick = function() {
+                  // Remove selected class from all days
+                  document.querySelectorAll('.day').forEach(d => d.classList.remove('selected'));
+                  // Add selected class to clicked day
+                  cell.classList.add('selected');
+                  selectDate(dayValue);
+                };
+              }
+              day++;
+            }
+            rowDiv.appendChild(cell);
+          }
+          calendarContainer.appendChild(rowDiv);
+        }
+      }
+    }
+
+    function nextMonth() {
+      currentCalendarMonth++;
+      if (currentCalendarMonth > 11) {
+        currentCalendarMonth = 0;
+        currentCalendarYear++;
+      }
+      if (document.getElementById('doctor').value) {
+        loadDoctorSchedule();
+      } else {
+        loadCalendar(currentCalendarYear, currentCalendarMonth);
+      }
+    }
+
+    function prevMonth() {
+      const today = new Date();
+      let newMonth = currentCalendarMonth - 1;
+      let newYear = currentCalendarYear;
+      if (newMonth < 0) {
+        newMonth = 11;
+        newYear--;
+      }
+      if (newYear < today.getFullYear() || (newYear === today.getFullYear() && newMonth < today.getMonth())) {
+        return;
+      }
+      currentCalendarMonth = newMonth;
+      currentCalendarYear = newYear;
+      if (document.getElementById('doctor').value) {
+        loadDoctorSchedule();
+      } else {
+        loadCalendar(currentCalendarYear, currentCalendarMonth);
+      }
+    }
+
+    // Corrected formatLocalDate function using backticks
+    function formatLocalDate(date) {
+      const year = date.getFullYear();
+      const month = (date.getMonth() + 1).toString().padStart(2, '0');
+      const day = date.getDate().toString().padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    }
+
+    // When a date is selected
+    function selectDate(day) {
+      selectedAppointmentDate = new Date(currentCalendarYear, currentCalendarMonth, day);
+      const selectedDateStr = formatLocalDate(selectedAppointmentDate);
+      document.getElementById('dateDisplay').textContent = selectedDateStr;
+      
+         // if "keep last-viewed month" is on, remember this month
+      const keepToggle = document.getElementById('keepMonthToggle');
+      if (keepToggle.checked) {
+        // store as "YYYY-M" where M is zero-based month index
+        const key = `${selectedAppointmentDate.getFullYear()}-${selectedAppointmentDate.getMonth()}`;
+        localStorage.setItem('lastViewedMonth', key);
+      }
+
+      document.getElementById('calendarContainer').style.display = 'none';
+      
+      // Show notification for date selection
+      showAlert(`Selected date: ${selectedDateStr}`, "info", "Date Selected");
+      
+      loadAvailableTimeSlotsForDoctor();
+    }
+
+    // Load available time slots for the selected doctor, date, and appointment type.
+     function loadAvailableTimeSlotsForDoctor() {
+  const doctor = document.getElementById('doctor').value;
+  const date = document.getElementById('dateDisplay').textContent.trim();
+  const appointmentType = document.getElementById('appointmentType').value;
+    // Get the selected slot interval (default to 10 if not selected)
+  const slotInterval = document.querySelector('input[name="slotInterval"]:checked')?.value || 10;
+
+  console.log("🔄 Loading available slots...");
+  console.log("📌 Selected Doctor:", doctor);
+  console.log("📅 Selected Date:", date);
+  console.log("🔹 Selected Appointment Type:", appointmentType);
+
+  if (!doctor || !date || !appointmentType) {
+    return;
+  }
+
+  google.script.run.withSuccessHandler(function(response) {
+    if (response.success) {
+      const timeSlotDropdown = document.getElementById('timeSlot');
+      timeSlotDropdown.innerHTML = '<option value="">Select a Time Slot</option>';
+      
+      if (response.allowedSlots.length === 0) {
+        showAlert("No available time slots for the selected criteria.", "warning");
+      } else {
+        response.allowedSlots.forEach(function(slot) {
+          var option = document.createElement("option");
+          option.value = slot;
+          option.textContent = slot;
+          timeSlotDropdown.appendChild(option);
+        });
+        showAlert(`${response.allowedSlots.length} time slots available`, "success");
+      }
+      console.log("✅ Time slots populated successfully.");
+    } else {
+      showAlert("Error: " + response.message, "error");
+    }
+  }).getAllowedSlots(doctor, appointmentType, date, parseInt(slotInterval));
+}
+
+
+
+    // Helper: increment end time by 10 minutes
+    function incrementEnd(hhmm, minutesToAdd) {
+      let mins = timeStringToMinutes(hhmm);
+      return formatTime(mins + minutesToAdd);
+    }
+    function timeStringToMinutes(timeStr) {
+      var parts = timeStr.split(":");
+      return parseInt(parts[0], 10) * 60 + parseInt(parts[1], 10);
+    }
+    function formatTime(totalMinutes) {
+      var hours = Math.floor(totalMinutes / 60);
+      var minutes = totalMinutes % 60;
+      return ("0" + hours).slice(-2) + ":" + ("0" + minutes).slice(-2);
+    }
+
+
+
+
+    function intersectArrays(arr1, arr2) {
+      return arr1.filter(function(item) {
+        return arr2.indexOf(item) !== -1;
+      });
+    }
+
+    // Load doctor's schedule
+    function loadDoctorSchedule() {
+      const doctor = document.getElementById('doctor').value;
+      if (!doctor) {
+        cachedDoctorData = { doctor: "", month: "", availability: {}, bookedSlots: {}, exceptions: {} };
+        loadCalendar(currentCalendarYear, currentCalendarMonth);
+        return;
+      }
+
+      // Show loading indicator
+      document.getElementById('calendarLoading').style.display = 'block';
+      document.getElementById('calendarContainer').querySelectorAll('.d-flex').forEach(el => el.style.display = 'none');
+
+      var monthKey = currentCalendarYear + "-" + (currentCalendarMonth + 1).toString().padStart(2, "0");
+      if (cachedDoctorData.doctor === doctor && cachedDoctorData.month === monthKey) {
+        // Hide loading indicator
+        document.getElementById('calendarLoading').style.display = 'none';
+        document.getElementById('calendarContainer').querySelectorAll('.d-flex').forEach(el => el.style.display = 'flex');
+        loadCalendar(currentCalendarYear, currentCalendarMonth);
+        return;
+      }
+
+      google.script.run.withSuccessHandler(function(response) {
+        cachedDoctorData.doctor = doctor;
+        cachedDoctorData.month = monthKey;
+        cachedDoctorData.bookedSlots = response.bookedSlots || {};
+        cachedDoctorData.exceptions = response.exceptions || {};
+        google.script.run.withSuccessHandler(function(availResponse) {
+          cachedDoctorData.availability = availResponse.availability || {};
+          // Hide loading indicator
+          document.getElementById('calendarLoading').style.display = 'none';
+          document.getElementById('calendarContainer').querySelectorAll('.d-flex').forEach(el => el.style.display = 'flex');
+          loadCalendar(currentCalendarYear, currentCalendarMonth);
+        }).withFailureHandler(function(error) {
+          // Hide loading indicator on error
+          document.getElementById('calendarLoading').style.display = 'none';
+          document.getElementById('calendarContainer').querySelectorAll('.d-flex').forEach(el => el.style.display = 'flex');
+          alert("Error loading doctor availability: " + error.message);
+        }).getDoctorAvailabilityData(doctor);
+      }).withFailureHandler(function(error) {
+        // Hide loading indicator on error
+        document.getElementById('calendarLoading').style.display = 'none';
+        document.getElementById('calendarContainer').querySelectorAll('.d-flex').forEach(el => el.style.display = 'flex');
+        alert("Error loading doctor schedule: " + error.message);
+      }).getDoctorMonthlyData(doctor, monthKey);
+    }
+
+    // Submit appointment
+    function submitAppointment() {
+      // Validate plan of action
+      const planOfActionValue = document.getElementById('planOfAction').value;
+      if (!planOfActionValue || JSON.parse(planOfActionValue).length === 0) {
+        showAlert("Please add at least one plan of action before submitting.", "warning");
+        return;
+      }
+
+      // Check if any procedure requires eye selection but wasn't completed
+      const eyeSelectionContainer = document.getElementById('eyeSelectionContainer');
+      if (!eyeSelectionContainer.classList.contains('d-none')) {
+        const selectedEye = document.querySelector('input[name="eyeSelection"]:checked');
+        if (!selectedEye) {
+          showAlert("Please select an eye for the current procedure before proceeding.", "warning");
+          return;
+        }
+      }
+
+      const patientType = document.querySelector('input[name="patientType"]:checked').value;
+      let patientData = {};
+      if (patientType === "existingPatient") {
+        patientData.MRDNo = document.getElementById('mrdNo').value.trim();
+      } else {
+        // Validate age input for new patients
+        const ageValidation = validateAgeInput();
+        if (!ageValidation.isValid) {
+          showAlert(ageValidation.errorMessage, "warning");
+          return;
+        }
+        
+        patientData.Name = document.getElementById('newPatientName').value.trim();
+        patientData.Age = document.getElementById('newPatientAge').value.trim();
+        patientData.Gender = document.getElementById('newPatientGender').value.trim();
+        patientData.Phone = document.getElementById('newPatientPhone').value.trim();
+        patientData.Address = document.getElementById('newPatientAddress').value.trim();
+        patientData.PatientType = document.getElementById('newPatientType').value.trim();
+      }
+      const appointmentType = document.getElementById('appointmentType').value;
+      const doctor = document.getElementById('doctor').value;
+      const appointmentDate = selectedAppointmentDate ? 
+        formatLocalDate(selectedAppointmentDate) : "";
+      const timeSlot = document.getElementById('timeSlot').value;
+      const planOfAction = document.getElementById('planOfAction').value;
+      const remarks = document.getElementById('remarks').value.trim();
+      const fixedSlot = document.getElementById('fixedSlotToggle').checked ? "Yes" : "";
+      
+      // Get urgency level for waiting list appointments
+      const urgencyLevel = appointmentType === "WAITING LIST" ? 
+        document.querySelector('input[name="urgencyLevel"]:checked')?.value || "" : "";
+      
+      // Get family identifier
+      const familyIdentifier = document.getElementById('familyIdentifier').value.trim();
+
+      // Special handling for waiting list appointments
+      if (appointmentType === "WAITING LIST") {
+        if (!doctor || !appointmentDate) {
+          showAlert("Please select both doctor and date for the waiting list appointment.", "warning");
+          return;
+        }
+        if (!urgencyLevel) {
+          showAlert("Please select a degree of urgency for the waiting list appointment.", "warning");
+          return;
+        }
+        // For waiting list, we don't need time slot
+        const appointmentData = {
+          patientType,
+          patientData,
+          appointmentType,
+          doctor,
+          appointmentDate,
+          timeSlot: "", // Empty time slot for waiting list
+          planOfAction,
+          remarks,
+          sessionToken: sessionToken,
+          fixedSlot: fixedSlot,
+          urgencyLevel: urgencyLevel, // Add urgency level to the data
+          familyIdentifier: familyIdentifier // Add family identifier to the data
+        };
+
+        // Show loading state
+        const submitBtn = document.getElementById('submitBtn');
+        submitBtn.disabled = true;
+        submitBtn.querySelector('.normal-text').style.display = 'none';
+        submitBtn.querySelector('.loading-text').style.display = 'inline-block';
+
+        google.script.run.withSuccessHandler(function(response) {
+          // Hide loading state
+          submitBtn.disabled = false;
+          submitBtn.querySelector('.normal-text').style.display = 'inline-block';
+          submitBtn.querySelector('.loading-text').style.display = 'none';
+          if (response.success) {
+            showAlert(response.message, "success");
+            resetForm();
+          } else {
+            showAlert("Error: " + response.message, "error");
+          }
+        }).submitAppointment(appointmentData);
+        return;
+      }
+
+      // Regular appointment validation
+
+      if (!appointmentDate || !timeSlot || !doctor) {
+        showAlert("Please complete all required fields (date, time slot, doctor).", "warning");
+        return;
+      }
+
+       // Show loading state
+      const submitBtn = document.getElementById('submitBtn');
+      submitBtn.disabled = true;
+      submitBtn.querySelector('.normal-text').style.display = 'none';
+      submitBtn.querySelector('.loading-text').style.display = 'inline-block';
+
+      // Check if we're in rescheduling mode
+      const params = new URLSearchParams(window.location.search);
+      const mrdNo = params.get('mrdNo');
+
+      if (mrdNo) {
+        // This is a reschedule
+        const appointmentData = {
+          mrdNo: mrdNo,
+          newDate: appointmentDate,
+          newTimeSlot: timeSlot,
+          sessionToken: sessionToken,
+          fixedSlot: fixedSlot  // Add fixedSlot to reschedule data
+        };
+
+        google.script.run.withSuccessHandler(function(response) {
+          // Hide loading state
+          submitBtn.disabled = false;
+          submitBtn.querySelector('.normal-text').style.display = 'inline-block';
+          submitBtn.querySelector('.loading-text').style.display = 'none';
+          if (response.success) {
+            showAlert(`Appointment for MRD ${mrdNo} moved to ${appointmentDate} at ${timeSlot}.`, "success");
+            goToDashboard();
+          } else {
+            showAlert("Error: " + response.message, "error");
+          }
+        }).rescheduleAppointment(appointmentData);
+      } else {
+        // This is a new appointment
+        const appointmentData = {
+          patientType,
+          patientData,
+          appointmentType,
+          doctor,
+          appointmentDate,
+          timeSlot,
+          planOfAction,
+          remarks,
+          sessionToken: sessionToken,
+          fixedSlot: fixedSlot,
+          familyIdentifier: familyIdentifier // Add family identifier to the data
+        };
+
+        google.script.run.withSuccessHandler(function(response) {
+              // Hide loading state
+          submitBtn.disabled = false;
+          submitBtn.querySelector('.normal-text').style.display = 'inline-block';
+          submitBtn.querySelector('.loading-text').style.display = 'none';
+          if (response.success) {
+            showAlert(response.message, "success");
+            resetForm();
+          } else {
+            showAlert("Error: " + response.message, "error");
+          }
+        }).submitAppointment(appointmentData);
+      }
+    }
+
+    // Reset form
+    function resetForm() {
+      // Reset patient selection
+      document.getElementById('existingPatient').checked = true;
+      document.getElementById('existingPatientFields').style.display = 'block';
+      document.getElementById('newPatientFields').style.display = 'none';
+      
+      // Reset patient details
+      document.getElementById('mrdNo').value = "";
+      document.getElementById('patientDetails').style.display = "none";
+      document.getElementById('newPatientName').value = "";
+      
+      // Reset age inputs
+      document.getElementById('ageTypeYears').checked = true;
+      document.getElementById('ageYears').value = "";
+      document.getElementById('ageMonths').value = "";
+      document.getElementById('ageDays').value = "";
+      document.getElementById('newPatientAge').value = "";
+      
+      // Reset age input visibility
+      document.getElementById('ageYearsInput').style.display = 'block';
+      document.getElementById('ageMonthsInput').style.display = 'none';
+      document.getElementById('ageDaysInput').style.display = 'none';
+      
+      // Remove age preview if exists
+      const existingPreview = document.getElementById('agePreview');
+      if (existingPreview) {
+        existingPreview.remove();
+      }
+      
+      document.getElementById('newPatientGender').value = "";
+      document.getElementById('newPatientPhone').value = "";
+      document.getElementById('newPatientAddress').value = "";
+      document.getElementById('newPatientType').value = "";
+
+      // Reset appointment details
+      document.getElementById('appointmentType').selectedIndex = 0;
+      document.getElementById('doctor').selectedIndex = 0;
+      document.getElementById('timeSlot').innerHTML = '<option value="">Select a Time Slot</option>';
+      
+      // Reset date selection
+      document.getElementById('dateDisplay').textContent = 'Select Date';
+      document.getElementById('calendarContainer').style.display = 'block';
+      selectedAppointmentDate = null;
+      
+      // Reset plan of action
+      document.getElementById('procedureInput').value = '';
+      document.getElementById('planOfAction').value = '';
+      document.getElementById('selectedProceduresList').innerHTML = '';
+      selectedProcedures = [];
+      document.getElementById('eyeSelectionContainer').classList.add('d-none');
+      
+      // Reset remarks and fixed slot
+      document.getElementById('remarks').value = "";
+      document.getElementById('fixedSlotToggle').checked = false;
+      
+      // Reset slot interval
+      document.getElementById('interval10').checked = true;
+      
+      // Reset urgency selection
+      document.querySelectorAll('input[name="urgencyLevel"]').forEach(radio => {
+        radio.checked = false;
+      });
+      document.getElementById('urgencySection').style.display = 'none';
+      
+      // Reset family identifier
+      document.getElementById('familyIdentifier').value = "";
+      
+      // — reload calendar, but respect "keep last‐viewed month" —
+      const keepToggle = document.getElementById('keepMonthToggle');
+      if (keepToggle.checked && localStorage.getItem('lastViewedMonth')) {
+        // parse stored "YYYY-M" (zero-based month) and use it
+        const [savedYear, savedMonth] = localStorage
+          .getItem('lastViewedMonth')
+          .split('-')
+          .map(Number);
+        currentCalendarYear  = savedYear;
+        currentCalendarMonth = savedMonth;
+      } else {
+        // fallback to today
+        const today = new Date();
+        currentCalendarYear  = today.getFullYear();
+        currentCalendarMonth = today.getMonth();
+      }
+      loadCalendar(currentCalendarYear, currentCalendarMonth);
+      
+      // Show all sections
+      document.getElementById('dateSelection').style.display = 'block';
+      document.getElementById('slotIntervalSection').style.display = 'block';
+      document.getElementById('timeSlotSection').style.display = 'block';
+    }
+
+    function cancelAppointment() {
+      goToDashboard();
+    }
+
+    function goToDashboard() {
+      window.top.location.href = baseUrl + "?page=Dashboard&sessionToken=" + encodeURIComponent(sessionToken);
+    }
+
+    function logout() {
+      console.log("BookAppointment: Logout clicked, session token:", sessionToken);
+      google.script.run
+        .withSuccessHandler(function() {
+          window.top.location.href = baseUrl;
+        })
+        .withFailureHandler(function(error) {
+          console.error("Error during logout: " + error);
+        })
+        .clearSession(sessionToken);
+    }
+
+    // Age Input Functions
+    function initializeAgeInputs() {
+      // Add event listeners for age type radio buttons
+      document.querySelectorAll('input[name="ageType"]').forEach(radio => {
+        radio.addEventListener('change', handleAgeTypeChange);
+      });
+      
+      // Add event listeners for age input fields
+      document.getElementById('ageYears').addEventListener('input', calculateAge);
+      document.getElementById('ageMonths').addEventListener('input', calculateAge);
+      document.getElementById('ageDays').addEventListener('input', calculateAge);
+    }
+    
+    function handleAgeTypeChange() {
+      const selectedType = document.querySelector('input[name="ageType"]:checked').value;
+      
+      // Hide all age input groups
+      document.getElementById('ageYearsInput').style.display = 'none';
+      document.getElementById('ageMonthsInput').style.display = 'none';
+      document.getElementById('ageDaysInput').style.display = 'none';
+      
+      // Clear all inputs
+      document.getElementById('ageYears').value = '';
+      document.getElementById('ageMonths').value = '';
+      document.getElementById('ageDays').value = '';
+      
+      // Show the selected input group
+      switch(selectedType) {
+        case 'years':
+          document.getElementById('ageYearsInput').style.display = 'block';
+          break;
+        case 'months':
+          document.getElementById('ageMonthsInput').style.display = 'block';
+          break;
+        case 'days':
+          document.getElementById('ageDaysInput').style.display = 'block';
+          break;
+      }
+      
+      // Clear the hidden age field
+      document.getElementById('newPatientAge').value = '';
+    }
+    
+    function calculateAge() {
+      const selectedType = document.querySelector('input[name="ageType"]:checked').value;
+      let ageValue = '';
+      let ageText = '';
+      
+      switch(selectedType) {
+        case 'years':
+          const years = document.getElementById('ageYears').value;
+          if (years) {
+            ageValue = years;
+            ageText = years + (years == 1 ? ' year' : ' years');
+          }
+          break;
+          
+        case 'months':
+          const months = document.getElementById('ageMonths').value;
+          if (months) {
+            ageValue = months + 'M';
+            ageText = months + (months == 1 ? ' month' : ' months');
+          }
+          break;
+          
+        case 'days':
+          const days = document.getElementById('ageDays').value;
+          if (days) {
+            ageValue = days + 'D';
+            ageText = days + (days == 1 ? ' day' : ' days');
+          }
+          break;
+      }
+      
+      // Update the hidden field that gets submitted
+      document.getElementById('newPatientAge').value = ageValue;
+      
+      // Optional: Show preview of calculated age
+      updateAgePreview(ageText);
+    }
+    
+    function updateAgePreview(ageText) {
+      // Remove any existing preview
+      const existingPreview = document.getElementById('agePreview');
+      if (existingPreview) {
+        existingPreview.remove();
+      }
+      
+      if (ageText) {
+        // Create age preview element
+        const preview = document.createElement('div');
+        preview.id = 'agePreview';
+        preview.className = 'mt-1 text-success';
+        preview.style.fontSize = '0.875rem';
+        preview.style.fontWeight = '500';
+        preview.innerHTML = `<i class="fas fa-check-circle me-1"></i>Age: ${ageText}`;
+        
+        // Insert after the age input container
+        const ageContainer = document.getElementById('ageInputContainer');
+        ageContainer.appendChild(preview);
+      }
+    }
+    
+    function validateAgeInput() {
+      const selectedType = document.querySelector('input[name="ageType"]:checked').value;
+      let isValid = false;
+      let errorMessage = '';
+      
+      switch(selectedType) {
+        case 'years':
+          const years = document.getElementById('ageYears').value;
+          isValid = years && years >= 0 && years <= 150;
+          errorMessage = 'Please enter a valid age in years (0-150)';
+          break;
+          
+        case 'months':
+          const months = document.getElementById('ageMonths').value;
+          isValid = months && months >= 1 && months <= 11;
+          errorMessage = 'Please enter a valid age in months (1-11)';
+          break;
+          
+        case 'days':
+          const days = document.getElementById('ageDays').value;
+          isValid = days && days >= 0 && days <= 30;
+          errorMessage = 'Please enter a valid age in days (0-30)';
+          break;
+      }
+      
+      return { isValid, errorMessage };
+    }
+
+    // Update the appointmentType change event listener
+    document.getElementById('appointmentType').addEventListener('change', function() {
+      var selectedType = this.value;
+      if (!selectedType) return;
+      
+      // Show notification for appointment type selection
+      showAlert(`Selected appointment type: ${selectedType}`, "info", "Appointment Type Selected");
+
+      // Handle waiting list appointments
+      if (selectedType === "WAITING LIST") {
+        // Show date selection and urgency section but hide time slot sections
+        document.getElementById('dateSelection').style.display = 'block';
+        document.getElementById('slotIntervalSection').style.display = 'none';
+        document.getElementById('timeSlotSection').style.display = 'none';
+        document.getElementById('urgencySection').style.display = 'block';
+        // Clear any selected time slot
+        document.getElementById('timeSlot').innerHTML = '<option value="">Select a Time Slot</option>';
+      } else {
+        // Show both date and time slot sections for regular appointments
+        document.getElementById('dateSelection').style.display = 'block';
+        document.getElementById('slotIntervalSection').style.display = 'block';
+        document.getElementById('timeSlotSection').style.display = 'block';
+        document.getElementById('urgencySection').style.display = 'none';
+      }
+      
+      if (selectedType === "GENERAL") {
+        console.log("Handling General Type");
+      } else {
+        console.log("Handling Specialized Type");
+      }
+      loadAvailableTimeSlotsForDoctor();
+    });
+
+    // On page load, initialize everything
+    window.onload = function() {
+  // Parse URL parameters
+  const params = new URLSearchParams(window.location.search);
+  const mrdNo = params.get('mrdNo');
+
+  // Remove any single quotes that might be in the MRD No and trim whitespace
+  const cleanMrdNo = mrdNo ? mrdNo.replace(/'/g, '').trim() : null;
+
+     // — remember toggle state and last-viewed month —
+    const keepToggle = document.getElementById('keepMonthToggle');
+    // initialize checkbox from storage
+    keepToggle.checked = localStorage.getItem('keepLastMonth') === 'true';
+    // when user flips it
+    keepToggle.addEventListener('change', () => {
+      if (keepToggle.checked) {
+        localStorage.setItem('keepLastMonth', 'true');
+      } else {
+        localStorage.setItem('keepLastMonth', 'false');
+        localStorage.removeItem('lastViewedMonth');
+      }
+    });
+
+    // if toggled on and we have a saved month, override defaults
+    if (keepToggle.checked && localStorage.getItem('lastViewedMonth')) {
+      const [savedYear, savedMonthIndex] = localStorage
+        .getItem('lastViewedMonth')
+        .split('-')
+        .map(Number);
+      currentCalendarYear  = savedYear;
+      currentCalendarMonth = savedMonthIndex;  // zero-based
+    }
+
+  console.log('URL Parameters:', { mrdNo: cleanMrdNo });
+  console.log("Full URL search params:", window.location.search);
+
+  // If mrdNo is present, we're in rescheduling mode
+  if (cleanMrdNo) {
+    // Auto-fill MRD and fetch patient details
+    document.getElementById('mrdNo').value = cleanMrdNo;
+    document.getElementById('existingPatient').checked = true;
+    document.getElementById('existingPatientFields').style.display = 'block';
+    document.getElementById('newPatientFields').style.display = 'none';
+
+    // Fetch patient details immediately
+    fetchPatientDetails();
+  }
+  
+
+  // Add the interval change listener right here
+  document.querySelectorAll('input[name="slotInterval"]').forEach(radio => {
+    radio.addEventListener('change', function() {
+      if (selectedAppointmentDate) {
+        loadAvailableTimeSlotsForDoctor();
+      }
+    });
+  });
+
+
+  loadAppointmentTypes();
+  loadDoctors();
+  loadHolidays();
+  loadCalendar(currentCalendarYear, currentCalendarMonth);
+  loadPlanOfActionOptions();
+  initProcedureInput();
+  initializeAgeInputs();
+  
+  var dateDisplay = document.getElementById('dateDisplay');
+  if (dateDisplay) {
+    dateDisplay.onclick = function() {
+      document.getElementById('calendarContainer').style.display = 'block';
+    };
+  }
+};
+
+    // Add this at the beginning of your script section
+    function showAlert(message, type = 'info', title = null) {
+      const container = document.getElementById('alertContainer');
+      const alert = document.createElement('div');
+      alert.className = `custom-alert ${type}`;
+      
+      // Set icon based on type
+      let icon = '';
+      switch(type) {
+        case 'success':
+          icon = '✓';
+          title = title || 'Success';
+          break;
+        case 'error':
+          icon = '✕';
+          title = title || 'Error';
+          break;
+        case 'warning':
+          icon = '⚠';
+          title = title || 'Warning';
+          break;
+        default:
+          icon = 'ℹ';
+          title = title || 'Information';
+      }
+
+      alert.innerHTML = `
+        <div class="alert-icon ${type}">${icon}</div>
+        <div class="alert-content">
+          <div class="alert-title">${title}</div>
+          <div class="alert-message">${message}</div>
+        </div>
+        <button class="alert-close" onclick="this.parentElement.remove()">×</button>
+      `;
+
+      container.appendChild(alert);
+
+      // Auto remove after 5 seconds
+      setTimeout(() => {
+        alert.classList.add('closing');
+        setTimeout(() => alert.remove(), 300);
+      }, 5000);
+    }
+
+    function generateFamilyIdentifierForBooking() {
+      // Remove any existing modal
+      const existing = document.getElementById('familyIdentifierModal');
+      if (existing) existing.remove();
+      
+      // Create modal
+      const modal = document.createElement('div');
+      modal.id = 'familyIdentifierModal';
+      modal.style.position = 'fixed';
+      modal.style.top = '0';
+      modal.style.left = '0';
+      modal.style.width = '100vw';
+      modal.style.height = '100vh';
+      modal.style.background = 'rgba(0,0,0,0.3)';
+      modal.style.display = 'flex';
+      modal.style.alignItems = 'center';
+      modal.style.justifyContent = 'center';
+      modal.style.zIndex = '9999';
+      modal.innerHTML = `
+        <div style="background: white; border-radius: 8px; padding: 32px 24px; min-width: 320px; max-width: 90vw; box-shadow: 0 2px 16px rgba(0,0,0,0.2);">
+          <h5>Assign Family Identifier</h5>
+          <p>Is this the first member of the family?</p>
+          <div id="familyIdManualEntry" style="display:none; margin-bottom: 12px;">
+            <label>Enter Family Identifier:</label>
+            <input type="text" id="manualFamilyIdInput" class="form-control" placeholder="e.g. F001" maxlength="6" style="margin-top: 4px;">
+          </div>
+          <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 16px;">
+            <button class="btn btn-primary" id="familyIdYesBtn">Yes</button>
+            <button class="btn btn-secondary" id="familyIdNoBtn">No</button>
+            <button class="btn btn-outline-secondary" id="familyIdCancelBtn">Cancel</button>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(modal);
+      
+      // Button handlers
+      document.getElementById('familyIdYesBtn').onclick = function() {
+        // Auto-generate
+        modal.remove();
+        showAlert('Generating family identifier...', 'info', 'Processing');
+        const tempAppointmentId = "TEMP_BOOKING_" + Date.now();
+        google.script.run
+          .withSuccessHandler(response => {
+            if (response.success) {
+              document.getElementById('familyIdentifier').value = response.familyIdentifier;
+              document.getElementById('familyIdentifier').readOnly = true;
+              showAlert(`Family identifier ${response.familyIdentifier} generated successfully!`, 'success', 'Success');
+            } else {
+              showAlert('Error generating family identifier: ' + response.message, 'error', 'Error');
+            }
+          })
+          .withFailureHandler(error => {
+            showAlert('Error generating family identifier: ' + error.toString(), 'error', 'Error');
+          })
+          .generateFamilyIdentifier(tempAppointmentId, true);
+      };
+      document.getElementById('familyIdNoBtn').onclick = function() {
+        // Show manual entry
+        document.getElementById('familyIdManualEntry').style.display = '';
+        document.getElementById('manualFamilyIdInput').focus();
+        // Change No button to Save
+        this.textContent = 'Save';
+        this.onclick = function() {
+          const val = document.getElementById('manualFamilyIdInput').value.trim();
+          if (!/^F\d{3}$/.test(val)) {
+            showAlert('Please enter a valid Family Identifier (e.g. F001)', 'warning', 'Invalid Format');
+            return;
+          }
+          // Check for duplicates in the appointment sheet (client-side check is not possible, so just set and make read-only)
+          document.getElementById('familyIdentifier').value = val;
+          document.getElementById('familyIdentifier').readOnly = true;
+          modal.remove();
+          showAlert(`Family identifier ${val} assigned.`, 'success', 'Success');
+        };
+      };
+      document.getElementById('familyIdCancelBtn').onclick = function() {
+        modal.remove();
+      };
+    }
+  </script>
+</body>
+</html>
