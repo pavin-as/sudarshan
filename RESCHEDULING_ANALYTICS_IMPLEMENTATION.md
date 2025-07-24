@@ -1,5 +1,13 @@
 # Appointment Rescheduling Analytics Implementation
 
+**This document is the main reference for rescheduling analytics in the Appointment Management System.**
+
+- For implementation status and next steps, see `implementation-checklist.md`.
+- For optimization details, see `optimization-activation-guide.md`.
+- For access control, see `ROLE_BASED_ACCESS_CONTROL.md`.
+
+---
+
 ## Overview
 
 This implementation provides comprehensive tracking and analytics for appointment rescheduling frequency across the hospital appointment system. The solution addresses the need to monitor how often appointments are being rescheduled to maintain hospital brand reputation and ensure appointment team accountability.

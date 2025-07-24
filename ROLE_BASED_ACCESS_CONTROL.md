@@ -1,5 +1,13 @@
 # Role-Based Access Control System
 
+**This document is the main reference for access control in the Appointment Management System.**
+
+- For implementation status and next steps, see `implementation-checklist.md`.
+- For optimization details, see `optimization-activation-guide.md`.
+- For analytics, see `RESCHEDULING_ANALYTICS_IMPLEMENTATION.md`.
+
+---
+
 ## Overview
 
 The appointment management system now includes a comprehensive role-based access control (RBAC) system with four hierarchical access levels. This system ensures that users can only access features and perform actions appropriate to their role and responsibility level.
